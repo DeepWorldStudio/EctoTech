@@ -1,23 +1,23 @@
-#the mod name as displayed in-game
-displayName: "Java Mod Template"
+# the mod name as displayed in-game
+displayName: "EctoTech"
 
-#the internal name of your mod
-name: "example-java-mod"
+# the internal name of your mod
+name: "ectotech"
 
-#your name
-author: "You"
+# your name
+author: "DeepWorldStudio"
 
-#the fully qualified main class of the mod
-main: "example.ExampleJavaMod"
+# the fully qualified main class of the mod
+main: "ectotech.EctoTech"
 
-#the mod description as seen in the mod dialog
-description: "A Mindustry Java mod template."
+# the mod description as seen in the mod dialog
+description: "Explore the new planet Ectorum with new technologies and unique features."
 
-#the mod version
-version: 1.0
+# the mod version
+version: 0.1
 
-#the minimum game build required to run this mod
+# the minimum game build required to run this mod
 minGameVersion: 154
 
-#this is a java mod
+# this is a java mod
 java: true
