@@ -1,10 +1,14 @@
 package ectotech.content;
 
+import arc.struct.EnumSet;
+import ectotech.world.blocks.utility.CoreBlockImitator;
 import mindustry.content.Items;
 import mindustry.content.UnitTypes;
+import mindustry.entities.TargetPriority;
 import mindustry.type.Category;
 import mindustry.world.Block;
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.BuildVisibility;
 
 import static mindustry.type.ItemStack.with;
@@ -32,6 +36,7 @@ public class EctoBlocks {
 
             //transport
 
+
             //liquid
 
             //power
@@ -39,7 +44,8 @@ public class EctoBlocks {
             //production (drills and bores)
 
             //cores and storages
-            coreSpark
+            coreSpark,
+            coreSparkImitator
 
             //turrets
 
@@ -53,25 +59,30 @@ public class EctoBlocks {
 
             ;
 
-    public static void load() {
+    public static void load(){
 
-
-        //endregion
-        //region cores and storages
-
-        coreSpark = new CoreBlock("core-spark") {{
-            requirements(Category.effect, BuildVisibility.coreZoneOnly, with(EctoItems.bismuth, 2500, EctoItems.zinc, 1800));
+        coreSpark = new CoreBlock("core-spark"){{
+            requirements(Category.effect, with(EctoItems.bismuth, 3000, EctoItems.zinc, 3000, Items.silicon, 2000));
             alwaysUnlocked = true;
 
             isFirstTier = true;
-            unitType = UnitTypes.alpha;
-            health = 1100;
-            itemCapacity = 4000;
+            unitType = EctoUnitTypes.glare;
+            health = 1200;
+            itemCapacity = 5000;
             size = 3;
-            buildCostMultiplier = 2f;
 
-            unitCapModifier = 18;
+            unitCapModifier = 8;
+            buildCostMultiplier = 0.8f;
+            researchCostMultiplier = 0.25f;
+
+        }};
+
+        coreSparkImitator = new CoreBlockImitator("core-spark-imitator", (CoreBlock) coreSpark){{
+            requirements(Category.effect, with(EctoItems.bismuth, 900, EctoItems.zinc, 450, Items.silicon, 2000));
+
+            health = 1200;
+            itemCapacity = 500;
+
         }};
     }
 }
-
