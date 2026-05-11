@@ -6,8 +6,7 @@ import mindustry.type.*;
 
 public class EctoItems {
     // Этап 1
-    public static Item bismuth, zinc, sulfur,
-            hydrodefensiveCompound;
+    public static Item bismuth, zinc, sulfur, hydrodefensiveCompound, sulfide;
 
     public static void load() {
         // Этап 1
@@ -29,6 +28,10 @@ public class EctoItems {
 
         hydrodefensiveCompound = new Item("hydrodefensive-compound", Color.valueOf("7a9fb5")) {{
             cost = 1.5f;
+        }};
+
+        sulfide = new Item("sulfide", Color.valueOf("7a9fb5")) {{
+
         }};
 
     }
