@@ -82,10 +82,9 @@ public class EctoPlanets {
             clearSectorOnLose = true;
 
             startSector = 0;
+            defaultCore = EctoBlocks.coreSpark;
 
             defaultEnv = Env.terrestrial | Env.oxygen | Env.groundWater;
-
-            defaultCore = EctoBlocks.coreSpark;
 
             ruleSetter = (Rules r) -> {
                 if (EctoTech.ectoTeam != null) {

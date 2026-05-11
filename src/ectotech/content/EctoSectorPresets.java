@@ -58,6 +58,7 @@ public class EctoSectorPresets {
         elderPlateau = new SectorPreset("elder-plateau", ectorum, 130) {{
             captureWave = 40;
             difficulty = 5;
+            startWaveTimeMultiplier = 1.5f;
         }};
 
         // 6.2. Пересохшая река (Dried River)
