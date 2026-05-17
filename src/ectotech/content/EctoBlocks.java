@@ -7,6 +7,7 @@ import mindustry.content.UnitTypes;
 import mindustry.entities.TargetPriority;
 import mindustry.type.Category;
 import mindustry.world.Block;
+import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.BuildVisibility;
@@ -17,6 +18,7 @@ public class EctoBlocks {
     public static Block
 
             //environment
+            polishedMarble,
 
             //boulders
 
@@ -60,6 +62,11 @@ public class EctoBlocks {
             ;
 
     public static void load(){
+
+        polishedMarble = new Floor("polished-marble") {{
+            autotile = true;
+            blendGroup = this;
+        }};
 
         coreSpark = new CoreBlock("core-spark"){{
             requirements(Category.effect, with(EctoItems.bismuth, 3000, EctoItems.zinc, 3000, Items.silicon, 2000));

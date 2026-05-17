@@ -1,6 +1,7 @@
 package ectotech.content;
 
 import arc.graphics.Color;
+import ectotech.EctoVars;
 import mindustry.content.Planets;
 import mindustry.game.Rules;
 import mindustry.graphics.g3d.HexMesh;
@@ -94,6 +95,8 @@ public class EctoPlanets {
                 r.placeRangeCheck = false;
 
                 r.coreDestroyClear = true;
+
+                r.tags.put("ectotech-pressure-explosions", String.valueOf(EctoVars.pressureExplosionsEnabled));
             };
         }};
     }
