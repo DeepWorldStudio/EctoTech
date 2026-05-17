@@ -10,14 +10,14 @@ import arc.util.Nullable;
 import mindustry.content.Blocks;
 import mindustry.entities.TargetPriority;
 import mindustry.game.Team;
-import mindustry.graphics.BlockRenderer;
+import mindustry.gen.Building;
 import mindustry.graphics.Layer;
+import mindustry.type.Item;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.blocks.storage.StorageBlock;
 import mindustry.world.meta.BlockFlag;
-import mindustry.world.meta.BlockGroup;
 
 import static mindustry.Vars.*;
 
@@ -28,10 +28,8 @@ public class CoreBlockImitator extends StorageBlock {
      */
     public CoreBlock mimicCore;
 
-    /**
-     * Зона ядра. По умолчанию ванильная.
-     */
     public @Nullable Floor fakeCoreFloor = Blocks.coreZone.asFloor();
+
     protected TextureRegion[][] edgeRegions;
 
     public CoreBlockImitator(String name, CoreBlock mimicCore) {
@@ -40,21 +38,22 @@ public class CoreBlockImitator extends StorageBlock {
 
         // Копируем размер ядра автоматически
         this.size = mimicCore.size;
+        buildType = CoreBlockImitatorBuild::new;
 
         this.solid = true;
         this.destructible = true;
         this.hasItems = true;
+        this.acceptsItems = true;
         this.coreMerge = false;
 
         // Группа и приоритет как у ядра
-        this.group = BlockGroup.none;
+        this.group = mimicCore.group;
         this.priority = TargetPriority.core;
         this.flags = EnumSet.of(BlockFlag.core, BlockFlag.storage);
 
         this.placeableLiquid = false;
         this.itemCapacity = 500;
         this.allowResupply = false;
-        this.unloadable = true;
     }
 
     protected boolean hasLiquidUnder(Tile tile) {
@@ -65,8 +64,7 @@ public class CoreBlockImitator extends StorageBlock {
 
     @Override
     public boolean canPlaceOn(Tile tile, Team team, int rotation) {
-        if(!super.canPlaceOn(tile, team, rotation)) return false;
-        return !hasLiquidUnder(tile);
+        return tile != null && !hasLiquidUnder(tile);
     }
 
     @Override
@@ -81,28 +79,33 @@ public class CoreBlockImitator extends StorageBlock {
         }
     }
 
-    @Override
-    public void drawShadow(Tile tile) {
-        if (tile != null && tile.build instanceof CoreBlockImitatorBuild build && build.drawAsMimic()) {
-            TextureRegion shadow = mimicCore.customShadowRegion;
-            if (shadow != null && shadow.found()) {
-                Draw.color(0f, 0f, 0f, BlockRenderer.shadowColor.a);
-                Draw.rect(shadow, tile.drawx(), tile.drawy());
-                Draw.color();
-                return;
-            }
-        }
-        super.drawShadow(tile);
-    }
-
-    /**
-     * Экземпляр Имитатора в мире
-     */
+    /** Экземпляр Имитатора в мире */
     public class CoreBlockImitatorBuild extends StorageBuild {
 
-        /**
-         * Условие: видит ли текущий игрок этот блок как ядро
-         */
+        @Override
+        public boolean acceptItem(Building source, Item item){
+            return block.acceptsItems && (state.rules.coreIncinerates || items.get(item) < itemCapacity);
+        }
+
+        @Override
+        public int getMaximumAccepted(Item item){
+            return state.rules.coreIncinerates ? Integer.MAX_VALUE / 2 : itemCapacity;
+        }
+
+        @Override
+        public void handleItem(Building source, Item item){
+            if(items.get(item) >= itemCapacity){
+                StorageBlock.incinerateEffect(this, source);
+            }else{
+                super.handleItem(source, item);
+            }
+        }
+
+        @Override
+        public boolean canUnload() {
+            return block.unloadable && state.rules.allowCoreUnloaders;
+        }
+
         public boolean drawAsMimic() {
             // Если мы не в редакторе и команда игрока враждебна — включаем маскировку
             return !(state.isEditor()) && player != null && player.team() != team;
@@ -140,7 +143,8 @@ public class CoreBlockImitator extends StorageBlock {
             if (edgeRegions == null && !headless) {
                 String edgeName = fakeCoreFloor.name + "-edge";
                 if (Core.atlas.has(edgeName)) {
-                    edgeRegions = Core.atlas.find(edgeName).split(tilesize, tilesize);
+                    int tsize = (int)(tilesize / Draw.scl);
+                    edgeRegions = Core.atlas.find(edgeName).split(tsize, tsize);
                 }
             }
 
@@ -173,7 +177,6 @@ public class CoreBlockImitator extends StorageBlock {
 
             Draw.z(oldZ);
         }
-
 
         @Override
         public TextureRegion getDisplayIcon() {
