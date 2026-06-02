@@ -3,15 +3,14 @@ package ectotech.world.blocks.pressure;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.EctoVars;
-import ectotech.world.blocks.pressure.interfaces.PressureGate;
-import ectotech.world.blocks.pressure.interfaces.PressureGenerator;
-import ectotech.world.blocks.pressure.interfaces.Pressurized;
-import ectotech.world.blocks.pressure.utils.PressureModule;
+import ectotech.world.pressure.interfaces.PressureGate;
+import ectotech.world.pressure.interfaces.PressureGenerator;
+import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.geometry.BlockContactGeometry;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
-import arc.util.Time;
 
 public class PressureGateBlock extends Block {
 
@@ -22,7 +21,7 @@ public class PressureGateBlock extends Block {
     public float pressureInputModifier = 0.82f;
     public float criticalPressure;
     public float superCriticalPressure;
-    public float outflowLinearFactor;
+    public float outflowTanhFactor;
     public float outflowExponentCoefficient;
 
     public boolean isOverflowGate = false;
@@ -83,8 +82,8 @@ public class PressureGateBlock extends Block {
         }
 
         @Override
-        public float outflowLinearFactor() {
-            return outflowLinearFactor;
+        public float outflowTanhFactor() {
+            return outflowTanhFactor;
         }
 
         @Override
