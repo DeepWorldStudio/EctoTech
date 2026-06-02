@@ -3,10 +3,12 @@
 
 
 ## Credits
-- Team founder: @AFARIUS (Afarius)
-- Programmers: @AFARIUS (Afarius)
+- Team founder: [@AFARIUS](https://github.com/AFARIUS) (Afarius)
+- Programmers: [@AFARIUS](https://github.com/AFARIUS) (Afarius)
 - Artists: <> (Bloody Ocean)
 - Composer: <> (Mellory)
+
+<nothing>
 
 A Java Mindustry mod template that works on Android and PC. The Kotlin version of this mod can be seen [here](https://github.com/Anuken/MindustryKotlinModTemplate).
 
