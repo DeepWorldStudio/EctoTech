@@ -1,11 +1,13 @@
-package ectotech.world.blocks.pressure.utils;
+package ectotech.world.pressure.utils;
 
+import arc.Events;
+import arc.math.Mat;
 import arc.math.Mathf;
 import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.EctoVars;
-import ectotech.world.blocks.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.Pressurized;
 
 public class PressureModule {
 
@@ -16,8 +18,8 @@ public class PressureModule {
     public PressurizedNetwork network = null;
 
     public void update(Pressurized owner) {
-        float outflow = outflowCalculate(owner);
-        pressure -= outflow * Time.delta;
+        float outflow = outflowCalculate(owner) * Time.delta / 60f;
+        pressure -= (Math.abs(outflow) <= Math.abs(pressure - EctoVars.defaultPressure)) ? outflow : pressure - EctoVars.defaultPressure;
 
         pressure = Math.max(EctoVars.absMinPressure, pressure);
 
@@ -38,10 +40,10 @@ public class PressureModule {
     }
 
     public float outflowCalculate(Pressurized owner) {
-        float k = owner.outflowLinearFactor();
-        float a = owner.outflowExponentCoefficient();
+        float k = pressure < EctoVars.defaultPressure ? EctoVars.defaultTanhFactor : owner.outflowTanhFactor();
+        float a = pressure < EctoVars.defaultPressure ? EctoVars.defaultExponentCoefficient : owner.outflowExponentCoefficient();
 
-        return k * ((float) Math.exp(a * (pressure - EctoVars.defaultPressure)) - EctoVars.defaultPressure / pressure);
+        return (float) ((pressure - EctoVars.defaultPressure) * Math.tanh((1f / k) * Math.exp((1f/ a) * Math.abs(pressure - EctoVars.defaultPressure))));
     }
 
     private void checkCritical(Pressurized owner) {
@@ -87,6 +89,40 @@ public class PressureModule {
         float calculatedEfficiency = 1.0f + k * (pressure - operatingPressure);
 
         return Math.min(calculatedEfficiency, maxE);
+    }
+
+    public static float maxEfficiencyPressure(Pressurized owner) {
+        float operatingPressure = owner.operatingPressure();
+        float thresholdPressure = owner.thresholdPressure();
+        float minE = owner.minEfficiencyCoeff();
+        float maxE = owner.maxEfficiencyCoeff();
+
+        if (Mathf.equal(operatingPressure, EctoVars.defaultPressure) &&
+                        Mathf.equal(thresholdPressure, EctoVars.defaultPressure))
+            return Mathf.equal(maxE, 1.0f) ? EctoVars.defaultPressure : Float.NaN;
+
+        float basis;
+        if (!Mathf.equal(operatingPressure, thresholdPressure)) {
+            basis = operatingPressure - thresholdPressure;
+        } else {
+            basis = operatingPressure - EctoVars.defaultPressure;
+        }
+
+        if (Mathf.equal(basis, 0f)) {
+            return Float.NaN;
+        }
+
+        if (Mathf.equal(maxE, 1.0f)) {
+            return Mathf.equal(minE, 1.0f) ? thresholdPressure : operatingPressure;
+        }
+
+        if (Mathf.equal(minE, 1.0f)) return Float.NaN;
+
+        float k = (1.0f - minE) / basis;
+
+        if (Mathf.equal(k, 0f)) return Float.NaN;
+
+        return operatingPressure + (maxE - 1.0f) / k;
     }
 
     public void applyPressureChange(float pressureChange) {

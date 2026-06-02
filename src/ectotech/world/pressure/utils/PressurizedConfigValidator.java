@@ -1,4 +1,4 @@
-package ectotech.world.blocks.pressure.utils;
+package ectotech.world.pressure.utils;
 
 import mindustry.world.Block;
 

@@ -1,4 +1,4 @@
-package ectotech.world.blocks.pressure.interfaces;
+package ectotech.world.pressure.interfaces;
 
 import arc.Core;
 import arc.graphics.Color;

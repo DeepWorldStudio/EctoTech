@@ -1,6 +1,5 @@
-package ectotech.world.blocks.pressure.interfaces;
+package ectotech.world.pressure.interfaces;
 
-import arc.math.Mathf;
 import ectotech.EctoVars;
 
 public interface PressureGate extends Pressurized {

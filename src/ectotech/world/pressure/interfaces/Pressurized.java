@@ -1,13 +1,14 @@
-package ectotech.world.blocks.pressure.interfaces;
+package ectotech.world.pressure.interfaces;
 
 import arc.graphics.Color;
-import arc.math.Mathf;
+import arc.struct.Seq;
 import arc.util.Strings;
 import ectotech.EctoVars;
-import ectotech.world.blocks.pressure.utils.PressureModule;
+import ectotech.world.geometry.BlockContactGeometry;
+import ectotech.world.pressure.utils.PressureModule;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import ectotech.world.blocks.pressure.utils.PressurizedNetwork;
+import ectotech.world.pressure.utils.PressurizedNetwork;
 import mindustry.content.Fx;
 import mindustry.entities.Damage;
 import mindustry.gen.Building;
@@ -45,7 +46,7 @@ public interface Pressurized {
     float maxEfficiencyCoeff();
 
     /** Коэффициенты утечки */
-    float outflowLinearFactor();
+    float outflowTanhFactor();
     float outflowExponentCoefficient();
 
     /** Критические давления */
@@ -56,7 +57,6 @@ public interface Pressurized {
     float pressureFlow();
 
     boolean explodesOnSuperCritical();
-
 
     /** Главный метод тика - вызывать из updateTile() */
     default void updatePressure() {
@@ -108,6 +108,8 @@ public interface Pressurized {
         self.kill();
     }
 
+    // СЕТЬ
+
     /** Если не пусто, блок является частью сети данного string-типа */
     default String pressureNetworkType() {
         return null;
@@ -116,6 +118,36 @@ public interface Pressurized {
     /** Ссылка на сеть (null если не сетевой) */
     default PressurizedNetwork pressureNetwork() {
         return pressureModule().network;
+    }
+
+    default Seq<Pressurized> getPressureConnections(Seq<Pressurized> out) {
+        for (Building neighbour : self().proximity) {
+            if (!(neighbour instanceof Pressurized other)) continue;
+            if (!BlockContactGeometry.hasEdgeContact(self(), neighbour)) continue;
+
+            out.add(other);
+        }
+
+        return out;
+    }
+
+    default void rebuildNetwork() {
+        if (pressureNetworkType() == null) return;
+
+        PressurizedNetwork net = pressureNetwork();
+
+        if (net == null) {
+            new PressurizedNetwork(pressureNetworkType(), pressure()).addMember(this);
+        } else {
+            net.split();
+        }
+    }
+
+    default void disconnectNetwork() {
+        PressurizedNetwork net = pressureNetwork();
+        if (net == null) return;
+
+        net.removeMember(this);
     }
 
     // СЕРИАЛИЗАЦИЯ
