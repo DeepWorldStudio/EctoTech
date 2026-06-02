@@ -36,27 +36,47 @@ public class BlockContactGeometry {
     }
 
     public static int calculateContactTiles(Building source, Building other, int side) {
+        side &= 3;
+
         float sourceHalf = source.block.size * Vars.tilesize / 2f;
         float otherHalf = other.block.size * Vars.tilesize / 2f;
 
-        float sourceMin, sourceMax;
-        float otherMin, otherMax;
+        float sourceLeft = source.x - sourceHalf;
+        float sourceRight = source.x + sourceHalf;
+        float sourceBottom = source.y - sourceHalf;
+        float sourceTop = source.y + sourceHalf;
 
-        // Для лево/право считаем перекрытие по Y
-        if (side == 0 || side == 2) {
-            sourceMin = source.y - sourceHalf;
-            sourceMax = source.y + sourceHalf;
-            otherMin = other.y - otherHalf;
-            otherMax = other.y + otherHalf;
-        } else {
-            // Для верх/низ считаем перекрытие по X
-            sourceMin = source.x - sourceHalf;
-            sourceMax = source.x + sourceHalf;
-            otherMin = other.x - otherHalf;
-            otherMax = other.x + otherHalf;
+        float otherLeft = other.x - otherHalf;
+        float otherRight = other.x + otherHalf;
+        float otherBottom = other.y - otherHalf;
+        float otherTop = other.y + otherHalf;
+
+        float epsilon = 0.01f;
+
+        float overlap;
+
+        switch (side) {
+            case 0 -> { // right
+                if (Math.abs(otherLeft - sourceRight) > epsilon) return 0;
+                overlap = Math.min(sourceTop, otherTop) - Math.max(sourceBottom, otherBottom);
+            }
+            case 1 -> { // top
+                if (Math.abs(otherBottom - sourceTop) > epsilon) return 0;
+                overlap = Math.min(sourceRight, otherRight) - Math.max(sourceLeft, otherLeft);
+            }
+            case 2 -> { // left
+                if (Math.abs(otherRight - sourceLeft) > epsilon) return 0;
+                overlap = Math.min(sourceTop, otherTop) - Math.max(sourceBottom, otherBottom);
+            }
+            case 3 -> { // bottom
+                if (Math.abs(otherTop - sourceBottom) > epsilon) return 0;
+                overlap = Math.min(sourceRight, otherRight) - Math.max(sourceLeft, otherLeft);
+            }
+            default -> {
+                return 0;
+            }
         }
 
-        float overlap = Math.min(sourceMax, otherMax) - Math.max(sourceMin, otherMin);
         if (overlap <= 0f) return 0;
 
         int tiles = Mathf.round(overlap / Vars.tilesize);
@@ -73,8 +93,6 @@ public class BlockContactGeometry {
         for (Building other : source.proximity) {
             if (other == null || other == source) continue;
 
-            if (source.relativeTo(other) != this.side) continue;
-
             int thisContactTiles = calculateContactTiles(source, other, this.side);
             if (thisContactTiles <= 0) continue;
 
@@ -86,5 +104,14 @@ public class BlockContactGeometry {
         contactTilesCount = Math.min(contactTilesCount, sideScale);
         airTilesCount = Math.max(sideScale - contactTilesCount, 0);
         airFraction = sideScale == 0 ? 0f : airTilesCount / (float) sideScale;
+    }
+
+    public static boolean hasEdgeContact(Building a, Building b) {
+        for (int side = 0; side < 4; side++) {
+            if (calculateContactTiles(a, b, side) > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }
