@@ -1,16 +1,18 @@
 package ectotech.content;
 
-import arc.struct.EnumSet;
+import arc.Core;
+import ectotech.world.blocks.distribution.PneumaticDuct;
+import ectotech.world.blocks.distribution.PneumaticDuctBridge;
+import ectotech.world.blocks.distribution.PneumaticDuctRouter;
+import ectotech.world.blocks.distribution.PneumaticOverflowDuct;
 import ectotech.world.blocks.utility.CoreBlockImitator;
+import ectotech.world.gen.RegionSlicer;
 import mindustry.content.Items;
-import mindustry.content.UnitTypes;
-import mindustry.entities.TargetPriority;
 import mindustry.type.Category;
 import mindustry.world.Block;
 import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.storage.CoreBlock;
-import mindustry.world.meta.BlockFlag;
-import mindustry.world.meta.BuildVisibility;
 
 import static mindustry.type.ItemStack.with;
 
@@ -18,7 +20,10 @@ public class EctoBlocks {
     public static Block
 
             //environment
+            malachite, charoit, ebonite,
             polishedMarble,
+
+            malachiteWall, charoitWall, eboniteWall,
 
             //boulders
 
@@ -37,13 +42,13 @@ public class EctoBlocks {
             //defense utils (regen and etc)
 
             //transport
+            pneumaticDuct, armoredPneumaticDuct, pneumaticDuctRouter, pneumaticDuctBridge, pneumaticOverflowDuct, pneumaticUnderflowDuct,
 
+    //liquid
 
-            //liquid
+    //power
 
-            //power
-
-            //production (drills and bores)
+    //production (drills and bores)
 
             //cores and storages
             coreSpark,
@@ -51,24 +56,184 @@ public class EctoBlocks {
 
             //turrets
 
-            //unit factories
+                    //unit factories
 
-            //payloads
+                    //payloads
 
-            //logic
+                    //logic
 
-            //campaign
+                    //campaign
 
-            ;
+                    ;
 
-    public static void load(){
+    public static void load() {
 
-        polishedMarble = new Floor("polished-marble") {{
-            autotile = true;
-            blendGroup = this;
+        malachite = new Floor("malachite") {{
+            variants = 4;
         }};
 
-        coreSpark = new CoreBlock("core-spark"){{
+        charoit = new Floor("charoit") {{
+            variants = 4;
+        }};
+
+        ebonite = new Floor("ebonite") {{
+            variants = 4;
+        }};
+
+        polishedMarble = new Floor("polished-marble") {
+            {
+                autotile = true;
+                drawEdgeOut = false;
+                drawEdgeIn = false;
+            }
+
+            //public TextureRegion[] spriteRegions;
+
+            @Override
+            public void load() {
+                super.load();
+                autotileRegions = RegionSlicer.splitRegion(Core.atlas.find(name + "-autotile"), 32/*Это ширина одного спрайта*/, 32/*Высота*/, 0/*Отступ. Нужен чтобы между текстурами не было "разлома"*/);
+
+                //spriteRegions[0/*номер спрайта*/] - выбор текстуры
+
+            }
+        };
+
+        malachiteWall = new StaticWall("malachite-wall");
+
+        charoitWall = new StaticWall("charoit-wall");
+
+        eboniteWall = new StaticWall("ebonite-wall");
+
+        pneumaticDuct = new PneumaticDuct("pneumatic-duct") {{
+            requirements(Category.distribution, with(EctoItems.bismuth, 1));
+            health = 90;
+            speed = 3f;
+            researchCost = with(EctoItems.bismuth, 15);
+
+            operatingPressure = 1f;
+            thresholdPressure = 2.8f;
+
+            isPressureRequired = false;
+
+            minEfficiencyCoeff = 0.3f;
+            maxEfficiencyCoeff = 1.33f;
+            outflowTanhFactor = 11.5f;
+            outflowExponentCoefficient = 2.8f;
+            criticalPressure = 7f;
+            superCriticalPressure = 12f;
+
+            explodesOnSuperCritical = true;
+        }};
+
+        armoredPneumaticDuct = new PneumaticDuct("armored-pneumatic-duct") {{
+            requirements(Category.distribution, with(EctoItems.bismuth, 2)); // TODO: +chromium
+            health = 180;
+            speed = 3f;
+            armored = true;
+            researchCost = with(EctoItems.bismuth, 150); // TODO: +chromium
+
+            operatingPressure = 1f;
+            thresholdPressure = 2.8f;
+
+            isPressureRequired = false;
+
+            minEfficiencyCoeff = 0.3f;
+            maxEfficiencyCoeff = 1.33f;
+            outflowTanhFactor = 11.5f;
+            outflowExponentCoefficient = 2.8f;
+            criticalPressure = 7f;
+            superCriticalPressure = 12f;
+
+            explodesOnSuperCritical = true;
+        }};
+
+        pneumaticDuctRouter = new PneumaticDuctRouter("pneumatic-duct-router") {{
+            requirements(Category.distribution, with(EctoItems.bismuth, 3));
+            health = 180;
+            speed = 3f;
+            researchCost = with(EctoItems.bismuth, 30);
+
+            operatingPressure = 1f;
+            thresholdPressure = 2.8f;
+
+            isPressureRequired = false;
+
+            minEfficiencyCoeff = 0.3f;
+            maxEfficiencyCoeff = 1.33f;
+            outflowTanhFactor = 11.5f;
+            outflowExponentCoefficient = 2.8f;
+            criticalPressure = 7f;
+            superCriticalPressure = 12f;
+
+            explodesOnSuperCritical = true;
+        }};
+
+        pneumaticDuctBridge = new PneumaticDuctBridge("pneumatic-duct-bridge") {{
+            requirements(Category.distribution, with(EctoItems.bismuth, 3));
+            health = 180;
+            speed = 3f;
+            researchCost = with(EctoItems.bismuth, 30);
+
+            operatingPressure = 1f;
+            thresholdPressure = 2.8f;
+
+            isPressureRequired = false;
+
+            minEfficiencyCoeff = 0.3f;
+            maxEfficiencyCoeff = 1.33f;
+            outflowTanhFactor = 11.5f;
+            outflowExponentCoefficient = 2.8f;
+            criticalPressure = 7f;
+            superCriticalPressure = 12f;
+
+            explodesOnSuperCritical = true;
+        }};
+
+        pneumaticOverflowDuct = new PneumaticOverflowDuct("pneumatic-overflow-duct") {{
+            requirements(Category.distribution, with(EctoItems.bismuth, 3));
+            health = 180;
+            speed = 3f;
+            researchCost = with(EctoItems.bismuth, 30);
+
+            operatingPressure = 1f;
+            thresholdPressure = 2.8f;
+
+            isPressureRequired = false;
+
+            minEfficiencyCoeff = 0.3f;
+            maxEfficiencyCoeff = 1.33f;
+            outflowTanhFactor = 11.5f;
+            outflowExponentCoefficient = 2.8f;
+            criticalPressure = 7f;
+            superCriticalPressure = 12f;
+
+            explodesOnSuperCritical = true;
+        }};
+
+        pneumaticUnderflowDuct = new PneumaticOverflowDuct("pneumatic-underflow-duct") {{
+            requirements(Category.distribution, with(EctoItems.bismuth, 3));
+            health = 180;
+            speed = 3f;
+            invert = true;
+            researchCost = with(EctoItems.bismuth, 30);
+
+            operatingPressure = 1f;
+            thresholdPressure = 2.8f;
+
+            isPressureRequired = false;
+
+            minEfficiencyCoeff = 0.3f;
+            maxEfficiencyCoeff = 1.33f;
+            outflowTanhFactor = 11.5f;
+            outflowExponentCoefficient = 2.8f;
+            criticalPressure = 7f;
+            superCriticalPressure = 12f;
+
+            explodesOnSuperCritical = true;
+        }};
+
+        coreSpark = new CoreBlock("core-spark") {{
             requirements(Category.effect, with(EctoItems.bismuth, 3000, EctoItems.zinc, 3000, Items.silicon, 2000));
             alwaysUnlocked = true;
 
@@ -84,7 +249,7 @@ public class EctoBlocks {
 
         }};
 
-        coreSparkImitator = new CoreBlockImitator("core-spark-imitator", (CoreBlock) coreSpark){{
+        coreSparkImitator = new CoreBlockImitator("core-spark-imitator", (CoreBlock) coreSpark) {{
             requirements(Category.effect, with(EctoItems.bismuth, 900, EctoItems.zinc, 450, Items.silicon, 2000));
 
             health = 1200;
