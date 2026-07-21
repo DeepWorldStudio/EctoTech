@@ -1,9 +1,13 @@
 package ectotech.world.blocks.distribution;
 
+import arc.math.Mathf;
+import ectotech.EctoVars;
 import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.gen.Building;
+import mindustry.ui.Bar;
 import mindustry.world.blocks.distribution.Duct;
 
 public class PneumaticDuct extends Duct {
@@ -22,33 +26,39 @@ public class PneumaticDuct extends Duct {
     public float criticalPressure = Float.MAX_VALUE;
     public float superCriticalPressure = Float.MAX_VALUE;
 
-    public final float pressureFlow = 0f; // doesn't produce pressure when working
+    public final float pressureFlow = 0f;
 
-    public boolean explodesOnSuperCritical = false;
+    public boolean explodesOnSuperCritical = true;
 
     public PneumaticDuct(String name) {
         super(name);
+
         sync = true;
     }
 
     @Override
     public void setBars() {
         super.setBars();
-        // Добавляем полоску давления в UI блока
-        addBar("pressure", (PneumaticDuctBuild b) -> new mindustry.ui.Bar(
+        addBar("pressure", (PneumaticDuctBuild b) -> new Bar(
                 b::pressureBarText,
                 b::pressureBarColor,
                 b::pressureBarFraction
         ));
     }
 
-    public class PneumaticDuctBuild extends DuctBuild implements Pressurized {
+    public class PneumaticDuctBuild extends DuctBuild implements Pressurized, PressurizedNetworkMember {
 
-        @Override public Building self() { return this; }
+        @Override
+        public Building self() {
+            return this;
+        }
 
         public PressureModule pressureModule = new PressureModule();
 
-        @Override public PressureModule pressureModule() { return pressureModule; }
+        @Override
+        public PressureModule pressureModule() {
+            return pressureModule;
+        }
 
         @Override public float operatingPressure() { return operatingPressure; }
         @Override public float thresholdPressure() { return thresholdPressure; }
@@ -63,14 +73,31 @@ public class PneumaticDuct extends Duct {
         @Override public float superCriticalPressure() { return superCriticalPressure; }
 
         @Override public float pressureFlow() { return pressureFlow; }
-
         @Override public boolean explodesOnSuperCritical() { return explodesOnSuperCritical; }
+
         @Override public String pressureNetworkType() { return PressureNetworkTypes.PneumaticDuctsNetwork; }
+
+        @Override
+        public boolean canPressureOutputTo(Building target, int side) {
+            // Всегда выводит только вперёд
+            return side == rotation;
+        }
+
+        @Override
+        public boolean canPressureInputFrom(Building source, int side) {
+            if (!armored) return side != rotation;
+            // else (armored)
+            if (side == ((rotation + 2) & 3)) return true;
+            if (side == rotation) return false;
+
+            return isDuct && source.front() == this;
+        }
 
         @Override
         public void update() {
             updatePressure();
             super.update();
+            keepAwakeIfPressurized();
         }
 
         @Override
@@ -96,8 +123,6 @@ public class PneumaticDuct extends Duct {
             disconnectNetwork();
         }
 
-        // SERIALIZATION
-
         @Override
         public void write(arc.util.io.Writes write) {
             super.write(write);
@@ -109,6 +134,5 @@ public class PneumaticDuct extends Duct {
             super.read(read, revision);
             readPressure(read, revision);
         }
-
     }
 }

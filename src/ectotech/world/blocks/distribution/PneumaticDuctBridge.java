@@ -1,9 +1,16 @@
 package ectotech.world.blocks.distribution;
 
+import arc.math.Mathf;
+import arc.math.geom.Geometry;
+import arc.struct.Seq;
+import ectotech.EctoVars;
 import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.gen.Building;
+import mindustry.world.Tile;
+import mindustry.world.blocks.distribution.DirectionBridge;
 import mindustry.world.blocks.distribution.DuctBridge;
 
 public class PneumaticDuctBridge extends DuctBridge {
@@ -24,11 +31,10 @@ public class PneumaticDuctBridge extends DuctBridge {
 
     public final float pressureFlow = 0f; // doesn't produce pressure when working
 
-    public boolean explodesOnSuperCritical = false;
+    public boolean explodesOnSuperCritical = true;
 
     public PneumaticDuctBridge(String name) {
         super(name);
-        sync = true;
     }
 
     @Override
@@ -42,7 +48,7 @@ public class PneumaticDuctBridge extends DuctBridge {
         ));
     }
 
-    public class PneumaticDuctBridgeBuild extends DuctBridgeBuild implements Pressurized {
+    public class PneumaticDuctBridgeBuild extends DuctBridgeBuild implements Pressurized, PressurizedNetworkMember {
 
         @Override public Building self() { return this; }
 
@@ -69,9 +75,59 @@ public class PneumaticDuctBridge extends DuctBridge {
         @Override public String pressureNetworkType() { return PressureNetworkTypes.PneumaticDuctsNetwork; }
 
         @Override
+        public void getPressureConnections(Seq<PressurizedNetworkMember> out) {
+            PressurizedNetworkMember.super.getPressureConnections(out);
+
+            Building linked = findLink();
+            if (linked instanceof PressurizedNetworkMember other
+                    && !out.contains(other, true)) {
+                out.add(other);
+            }
+
+            for (int dir = 0; dir < 4; dir++) {
+                int dx = Geometry.d4x(dir);
+                int dy = Geometry.d4y(dir);
+
+                for (int i = 1; i <= range; i++) {
+                    Tile otherTile = tile.nearby(-dx * i, -dy * i);
+                    if (otherTile == null || otherTile.build == null) continue;
+
+                    if (otherTile.build instanceof DirectionBridge.DirectionBridgeBuild bridge
+                            && bridge.block == block
+                            && bridge.team == team) {
+
+                        if (bridge.rotation == dir
+                                && bridge.findLink() == this
+                                && bridge instanceof PressurizedNetworkMember member
+                                && !out.contains(member, true)) {
+                            out.add(member);
+                        }
+                        break; // нашли мост — дальше не смотрим
+                    }
+                }
+            }
+        }
+
+        @Override
+        public boolean canPressureOutputTo(Building target, int side) {
+            // Терминальный мост: выводит вперёд как duct
+            if (findLink() == null) return side == rotation;
+            // Есть link: локально не выводит — только удалённо через getPressureConnections
+            return false;
+        }
+
+        @Override
+        public boolean canPressureInputFrom(Building source, int side) {
+            if (findLink() == null) return false;
+
+            return side != rotation;
+        }
+
+        @Override
         public void update() {
             updatePressure();
             super.update();
+            keepAwakeIfPressurized();
         }
 
         @Override

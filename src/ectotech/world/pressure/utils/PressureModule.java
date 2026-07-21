@@ -1,7 +1,5 @@
 package ectotech.world.pressure.utils;
 
-import arc.Events;
-import arc.math.Mat;
 import arc.math.Mathf;
 import arc.util.Time;
 import arc.util.io.Reads;
@@ -15,7 +13,7 @@ public class PressureModule {
 
     public float efficiency = 1.0f;
 
-    public PressurizedNetwork network = null;
+    public PressureNetworkModule network = null;
 
     public void update(Pressurized owner) {
         float outflow = outflowCalculate(owner) * Time.delta / 60f;

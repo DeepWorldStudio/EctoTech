@@ -2,7 +2,7 @@ package ectotech.world.pressure.interfaces;
 
 import ectotech.EctoVars;
 
-public interface PressureGate extends Pressurized {
+public interface PressurizedGate extends Pressurized {
 
     int pressureInputSide();
 
@@ -82,8 +82,6 @@ public interface PressureGate extends Pressurized {
 
     // Инициация внешнего воздействия
 
-    default void initiatePressureTransfer() {
-
-    }
+    default void initiatePressureTransfer() {    }
 
 }

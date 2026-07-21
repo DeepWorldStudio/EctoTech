@@ -1,6 +1,12 @@
 package ectotech.world.blocks.distribution;
 
+import arc.graphics.g2d.Draw;
+import arc.math.Mathf;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
+import ectotech.EctoVars;
 import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.gen.Building;
@@ -24,15 +30,17 @@ public class PneumaticDuctRouter extends DuctRouter {
 
     public final float pressureFlow = 0f; // doesn't produce pressure when working
 
-    public boolean explodesOnSuperCritical = false;
+    public boolean explodesOnSuperCritical = true;
+
 
     public PneumaticDuctRouter(String name) {
         super(name);
-        sync = true;
 
         configurable = false;
         saveConfig = false;
         clearOnDoubleTap = false;
+
+        squareSprite = false;
     }
 
     @Override
@@ -51,9 +59,11 @@ public class PneumaticDuctRouter extends DuctRouter {
         return 0;
     }
 
-    public class PneumaticDuctRouterBuild extends DuctRouterBuild implements Pressurized {
+    public class PneumaticDuctRouterBuild extends DuctRouterBuild implements Pressurized, PressurizedNetworkMember {
 
-        @Override public Building self() { return this; }
+        @Override public Building self() {
+            return this;
+        }
 
         public PressureModule pressureModule = new PressureModule();
 
@@ -78,15 +88,26 @@ public class PneumaticDuctRouter extends DuctRouter {
         @Override public String pressureNetworkType() { return PressureNetworkTypes.PneumaticDuctsNetwork; }
 
         @Override
-        public void draw() {
-            arc.graphics.g2d.Draw.rect(region, x, y);
-            arc.graphics.g2d.Draw.rect(topRegion, x, y, rotdeg());
+        public boolean canPressureOutputTo(Building target, int side) {
+            return side != ((rotation + 2) & 3);
+        }
+
+        @Override
+        public boolean canPressureInputFrom(Building source, int side) {
+            return side == ((rotation + 2) & 3);
+        }
+
+        @Override
+        public void draw(){
+            Draw.rect(region, x, y);
+            Draw.rect(topRegion, x, y, rotdeg());
         }
 
         @Override
         public void update() {
             updatePressure();
             super.update();
+            keepAwakeIfPressurized();
         }
 
         @Override
@@ -149,13 +170,13 @@ public class PneumaticDuctRouter extends DuctRouter {
         // SERIALIZATION
 
         @Override
-        public void write(arc.util.io.Writes write) {
+        public void write(Writes write) {
             super.write(write);
             writePressure(write);
         }
 
         @Override
-        public void read(arc.util.io.Reads read, byte revision) {
+        public void read(Reads read, byte revision) {
             super.read(read, revision);
             readPressure(read, revision);
             sortItem = null;

@@ -1,10 +1,14 @@
 package ectotech.world.blocks.distribution;
 
+import arc.graphics.g2d.Draw;
+import arc.math.Mathf;
 import arc.scene.ui.layout.Table;
 import arc.util.Nullable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import ectotech.EctoVars;
 import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.gen.Building;
@@ -32,15 +36,16 @@ public class PneumaticOverflowDuct extends OverflowDuct {
 
     public final float pressureFlow = 0f; // doesn't produce pressure when working
 
-    public boolean explodesOnSuperCritical = false;
+    public boolean explodesOnSuperCritical = true;
 
     public PneumaticOverflowDuct(String name) {
         super(name);
-        sync = true;
 
         configurable = true;
         saveConfig = true;
         clearOnDoubleTap = true;
+
+        squareSprite = false;
 
         config(Item.class, (PneumaticOverflowDuctBuild tile, Item item) -> tile.sortItem = item);
         configClear((PneumaticOverflowDuctBuild tile) -> tile.sortItem = null);
@@ -63,7 +68,7 @@ public class PneumaticOverflowDuct extends OverflowDuct {
         return build == null || build.sortItem == null ? 0 : build.sortItem.color.rgba();
     }
 
-    public class PneumaticOverflowDuctBuild extends OverflowDuctBuild implements Pressurized {
+    public class PneumaticOverflowDuctBuild extends OverflowDuctBuild implements Pressurized, PressurizedNetworkMember {
 
         public @Nullable Item sortItem;
 
@@ -88,17 +93,28 @@ public class PneumaticOverflowDuct extends OverflowDuct {
         @Override public float pressureFlow() { return pressureFlow; }
 
         @Override public boolean explodesOnSuperCritical() { return explodesOnSuperCritical; }
+
         @Override public String pressureNetworkType() { return PressureNetworkTypes.PneumaticDuctsNetwork; }
 
         @Override
-        public void draw() {
-            arc.graphics.g2d.Draw.rect(region, x, y);
+        public boolean canPressureOutputTo(Building target, int side) {
+            return side != ((rotation + 2) & 3);
+        }
+
+        @Override
+        public boolean canPressureInputFrom(Building source, int side) {
+            return side == ((rotation + 2) & 3);
+        }
+
+        @Override
+        public void draw(){
+            Draw.rect(region, x, y);
             if (sortItem != null) {
-                arc.graphics.g2d.Draw.color(sortItem.color);
-                arc.graphics.g2d.Draw.rect("center", x, y);
-                arc.graphics.g2d.Draw.color();
+                Draw.color(sortItem.color);
+                Draw.rect("center", x, y);
+                Draw.color();
             } else {
-                arc.graphics.g2d.Draw.rect(topRegion, x, y, rotdeg());
+                Draw.rect(topRegion, x, y, rotdeg());
             }
         }
 
@@ -130,6 +146,7 @@ public class PneumaticOverflowDuct extends OverflowDuct {
         public void update() {
             updatePressure();
             super.update();
+            keepAwakeIfPressurized();
         }
 
         @Override

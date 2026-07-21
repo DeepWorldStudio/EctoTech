@@ -13,7 +13,7 @@ public class EctoSectorPresets {
 
     // first fork
     elderPlateau, metalRidge,
-    driedRiver, sulfuricSwamp, volcanicLand,
+    driedRiver, sulfuricSwamp,
 
     // first fork concatenation
     recyclingFacility;
@@ -79,13 +79,7 @@ public class EctoSectorPresets {
             difficulty = 6;
         }};
 
-        // 8.1. Привулканье (Volcanic Land)
-        volcanicLand = new SectorPreset("volcanic-land", ectorum, 72) {{
-            captureWave = 60;
-            difficulty = 7;
-        }};
-
-        // 9. Перерабатывающий завод (Recycling Facility)
+        // 8. Перерабатывающий завод (Recycling Facility)
         recyclingFacility = new SectorPreset("recycling-facility", ectorum, 140) {{
             captureWave = 70;
             difficulty = 8;

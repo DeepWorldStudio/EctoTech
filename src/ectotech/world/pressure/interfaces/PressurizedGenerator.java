@@ -6,7 +6,7 @@ import arc.math.Mathf;
 import ectotech.EctoVars;
 
 /** Pressure compressors interface */
-public interface PressureGenerator extends Pressurized {
+public interface PressurizedGenerator extends Pressurized {
 
     float maxPressure();
 

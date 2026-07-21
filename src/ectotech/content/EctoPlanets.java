@@ -82,18 +82,15 @@ public class EctoPlanets {
             allowWaves = true;
             clearSectorOnLose = true;
 
-            startSector = 0;
+            startSector = 15;
             defaultCore = EctoBlocks.coreSpark;
 
             defaultEnv = Env.terrestrial | Env.oxygen | Env.groundWater;
 
             ruleSetter = (Rules r) -> {
-                if (EctoTech.ectoTeam != null) {
-                    r.waveTeam = EctoTech.ectoTeam;
-                }
+                if (EctoTech.ectoTeam != null) r.waveTeam = EctoTech.ectoTeam;
 
                 r.placeRangeCheck = false;
-
                 r.coreDestroyClear = true;
 
                 r.tags.put("ectotech-pressure-explosions", String.valueOf(EctoVars.pressureExplosionsEnabled));

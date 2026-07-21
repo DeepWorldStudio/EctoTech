@@ -15,31 +15,77 @@ import static ectotech.content.EctoSectorPresets.*;
 
 public class EctoTechTree {
     public static void load() {
-        EctoPlanets.ectorum.techTree = nodeRoot("ectorum", coreSpark, () -> {
+        Seq<Objective> ectorumSector = Seq.with(new OnPlanet(EctoPlanets.ectorum));
+
+        EctoPlanets.ectorum.techTree = nodeRoot("ectorum", coreSpark, true, () -> {
+
+            // Item distribution tree
+            node(pneumaticDuct, ectorumSector, () -> {
+                node(pneumaticDuctRouter, () -> {
+                    node(pneumaticDuctBridge, () -> {
+                        node(armoredPneumaticDuct, () -> {
+
+                        });
+                    });
+
+                    node(pneumaticOverflowDuct, () -> {
+                        node(pneumaticUnderflowDuct, () -> {
+
+                        });
+                    });
+                });
+            });
+
+
+            //Power, Production, Drills and Liquid distribution tree
+            node(clivelite /*TODO: change to Impulse Bore*/, () -> {
+                node(cliffShredder, Seq.with(new OnSector(wasteland)), () -> {
+                    node(highPressureSiliconSmelter, () -> {
+
+                    });
+                });
+
+                node(compoundAssembler, Seq.with(new OnSector(foothills)), () -> {
+
+                });
+            });
+
+            //Turrets and walls tree
+
+            //Cores and imitators tree
+            node(coreSparkImitator, Seq.with(new OnSector(elderPlateau)), () -> {
+                node(coreSunrise, () -> {
+
+                });
+            });
+
+            //Units, unit constructors and unit distribution tree
+
+            //Sectors tree
             node(theHollow, () -> {
 
                 node(wasteland, Seq.with(
                         new SectorComplete(theHollow)
-                        // TODO, когда появятся реальные блоки: new Research(graphitePress) new Research(basicDrill)
+                        // TODO new Research(ImpulseBore)
                 ), () -> {
 
                     node(foothills, Seq.with(
-                            new SectorComplete(wasteland)
+                            new SectorComplete(wasteland),
+                            new Research(highPressureSiliconSmelter)
 
                             /*
                              * TODO:
-                             * , new Research(siliconSmelter)
                              * , new Research(windProtectionTechnology)
                              */
                     ), () -> {
 
                         node(ancientCanyon, Seq.with(
-                                new SectorComplete(foothills)
+                                new SectorComplete(foothills),
+                                new Research(compoundAssembler)
 
                                 /*
                                  * TODO:
                                  * , new Research(waterPump)
-                                 * , new Research(basicUnitFactory)
                                  */
                         ), () -> {
 
@@ -78,11 +124,7 @@ public class EctoTechTree {
                                     ), () -> {
                                         /*
                                          * TODO:
-                                         * Здесь позже можно открыть литиевую ветку:
-                                         *
-                                         * node(lithiumExtractor, Seq.with(
-                                         *     new SectorComplete(metalRidge)
-                                         * ), () -> {});
+
                                          */
                                     });
                                 });
@@ -105,34 +147,23 @@ public class EctoTechTree {
 
                                             /*
                                              * TODO:
-                                             * , new Research(sulfuricAcid)
+                                             * , new Research()
                                              */
                                     ), () -> {
 
-                                        node(volcanicLand, Seq.with(
+                                        node(recyclingFacility, Seq.with(
+                                                new SectorComplete(metalRidge),
                                                 new SectorComplete(sulfuricSwamp)
 
                                                 /*
                                                  * TODO:
-                                                 * , new Research(sulfide)
-                                                 * , new Research(hydrodefensiveCompound)
+                                                 * , new Research(chromium)
+                                                 * , new Research(recyclingTechnology)
                                                  */
                                         ), () -> {
-
-                                            node(recyclingFacility, Seq.with(
-                                                    new SectorComplete(sulfuricSwamp),
-                                                    new SectorComplete(volcanicLand)
-
-                                                    /*
-                                                     * TODO:
-                                                     * , new Research(chromium)
-                                                     * , new Research(recyclingTechnology)
-                                                     */
-                                            ), () -> {
-                                                /*
-                                                 * Финал первого технологического этапа.
-                                                 */
-                                            });
+                                            /*
+                                             * Финал первого технологического этапа.
+                                             */
                                         });
                                     });
                                 });
@@ -141,30 +172,38 @@ public class EctoTechTree {
                     });
                 });
             });
+        });
 
-            nodeProduce(bismuth, () -> {
-                nodeProduce(zinc, () -> {
+        // Items and liquids tree
+        nodeProduce(bismuth, () -> {
+            nodeProduce(zinc, () -> {
+            });
+            nodeProduce(sand, () -> {
+                nodeProduce(scrap, () -> {
                 });
-                nodeProduce(sand, () -> {
-                    nodeProduce(scrap, () -> {
+                nodeProduce(graphite, () -> {
+                    nodeProduce(lithium, () -> {
+
                     });
-                    nodeProduce(graphite, () -> {
+                });
+                nodeProduce(silicon, () -> {
+                    nodeProduce(hydrodefensiveCompound, () -> {
                     });
-                    nodeProduce(silicon, () -> {
-                        nodeProduce(hydrodefensiveCompound, () -> {
+                });
+            });
+            nodeProduce(water, () -> {
+            });
+            nodeProduce(sulfur, () -> {
+                nodeProduce(sulfurSolution, () -> {
+                    nodeProduce(sulfuricAcid, () -> {
+                        nodeProduce(teynorite, () -> {
+                            nodeProduce(chromium, () -> {
+
+                            });
                         });
                     });
                 });
-                nodeProduce(water, () -> {
-                });
-                nodeProduce(sulfur, () -> {
-                    nodeProduce(sulfurSolution, () -> {
-                        nodeProduce(sulfuricAcid, () -> {
-
-                        });
-                    });
-                    nodeProduce(sulfide, () -> {
-                    });
+                nodeProduce(sulfide, () -> {
                 });
             });
         });

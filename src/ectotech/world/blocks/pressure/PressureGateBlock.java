@@ -3,8 +3,8 @@ package ectotech.world.blocks.pressure;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.EctoVars;
-import ectotech.world.pressure.interfaces.PressureGate;
-import ectotech.world.pressure.interfaces.PressureGenerator;
+import ectotech.world.pressure.interfaces.PressurizedGate;
+import ectotech.world.pressure.interfaces.PressurizedGenerator;
 import ectotech.world.pressure.interfaces.Pressurized;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.geometry.BlockContactGeometry;
@@ -38,14 +38,14 @@ public class PressureGateBlock extends Block {
     @Override
     public void setBars() {
         super.setBars();
-        addBar("pressure", (PressureGateBuild b) -> new Bar(
+        addBar("pressure", (PressurizedGateBuild b) -> new Bar(
                 b::pressureBarText,
                 b::pressureBarColor,
                 b::pressureBarFraction
         ));
     }
 
-    public class PressureGateBuild extends Building implements PressureGate {
+    public class PressurizedGateBuild extends Building implements PressurizedGate {
 
         @Override
         public Building self() {
@@ -130,11 +130,17 @@ public class PressureGateBlock extends Block {
         }
 
         @Override
+        public void update() {
+            updatePressure();
+            super.update();
+            keepAwakeIfPressurized();
+        }
+
+        @Override
         public void updateTile() {
             if (efficiency > 0) {
                 initiatePressureTransfer(delta());
             }
-            updatePressure();
         }
 
         public void initiatePressureTransfer(float delta) {
@@ -149,8 +155,8 @@ public class PressureGateBlock extends Block {
                 var port = inputConnections.ports.get(i);
                 Building inputNeighbour = port.building();
 
-                if (!(inputNeighbour instanceof Pressurized targetBuilding) || targetBuilding instanceof PressureGate ||
-                        (targetBuilding instanceof PressureGenerator gen && port.targetSide() != gen.pressureOutputSide()))
+                if (!(inputNeighbour instanceof Pressurized targetBuilding) || targetBuilding instanceof PressurizedGate ||
+                        (targetBuilding instanceof PressurizedGenerator gen && port.targetSide() != gen.pressureOutputSide()))
                     continue;
 
                 float portRequest = currentMaxInputFlow * port.fraction();
@@ -195,8 +201,8 @@ public class PressureGateBlock extends Block {
                 Building neighbour = port.building();
 
                 if (!(neighbour instanceof Pressurized target) ||
-                        (target instanceof PressureGate) ||
-                        (target instanceof PressureGenerator gen && port.targetSide() != gen.pressureOutputSide()))
+                        (target instanceof PressurizedGate) ||
+                        (target instanceof PressurizedGenerator gen && port.targetSide() != gen.pressureOutputSide()))
                     continue;
 
                 if (isOverflowGate() && calculateOverflowCoefficient(target) <= 0f) {
