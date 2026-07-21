@@ -5,6 +5,7 @@
 ## Credits
 - Team founder: [@AFARIUS](https://github.com/AFARIUS) (Afarius)
 - Programmers: [@AFARIUS](https://github.com/AFARIUS) (Afarius)
+- Mapmakers: @Tekta_RU (Tekta), [@AFARIUS](https://github.com/AFARIUS) (Afarius)
 - Artists: <> (Bloody Ocean)
 - Composer: <> (Mellory)
 
