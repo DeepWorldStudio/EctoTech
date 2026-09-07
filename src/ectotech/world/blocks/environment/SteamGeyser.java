@@ -11,6 +11,7 @@ import arc.struct.Seq;
 import arc.util.Time;
 import ectotech.content.EctoAttributes;
 import ectotech.content.EctoShaders;
+import ectotech.content.EctoSounds;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
@@ -18,9 +19,7 @@ import mindustry.game.EventType;
 import mindustry.gen.Groups;
 import mindustry.gen.Sounds;
 import mindustry.graphics.Layer;
-import mindustry.graphics.Shaders;
 import mindustry.world.Tile;
-import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.SteamVent;
 
 import static mindustry.Vars.tilesize;
@@ -30,6 +29,9 @@ public class SteamGeyser extends SteamVent {
     public float activeTime = 900f;
     public float passiveTime = 1800f;
 
+    public float activeEfficiency = 1f;
+    public float passiveEfficiency = 0.04f;
+
     public float unitDamageTaken = 0.168f;
 
     public Color geyserWaterColor = Color.valueOf("4a9eff");
@@ -37,8 +39,8 @@ public class SteamGeyser extends SteamVent {
     private static final float activeEffectSpacing = 4f;
     private static final float passiveEffectSpacing = 25f;
 
-    private static final float passiveVolume = 0.04f;
-    private static final float activeVolume = 0.08f;
+    private static final float passiveVolume = 0.01f;
+    private static final float activeVolume = 0.04f;
 
     private static final IntSet damagedUnits = new IntSet();
     private static final Seq<Tile> centers = new Seq<>();
@@ -58,7 +60,7 @@ public class SteamGeyser extends SteamVent {
             registered = true;
 
             Events.run(EventType.Trigger.update, () -> {
-                if (Vars.state.isGame() && !Vars.state.isEditor()) {
+                if (Vars.state.isGame() && !Vars.state.isEditor() && !Vars.state.isPaused()) {
                     if (!Vars.net.client()) updateGeysers();
                     if (!Vars.headless) updateGeysersSounds();
                 }
@@ -198,17 +200,17 @@ public class SteamGeyser extends SteamVent {
             boolean hasBuilding = center.build != null;
 
             // Loop-звук через агрегатор
-            Sound loopSound = active ? Sounds.loopBio : Sounds.loopSteam;
+            Sound loopSound = active ? EctoSounds.loopGeyserActive : EctoSounds.loopGeyserInactive;
             float volume = active ? activeVolume : passiveVolume;
             if (hasBuilding) volume *= 0.35f;
 
             Vars.control.sound.loop(loopSound, center, volume);
 
-            // Одноразовый звук перехода passive → active
+            // Одноразовый звук перехода passive -> active
             float pt = geyser.phaseTime(center);
             if (pt < Time.delta && active) {
-                float eruptVol = hasBuilding ? 0.4f : 1f;
-                Sounds.shootEnergyField.at(center.worldx(), center.worldy(), 1f, eruptVol);
+                float eruptVol = hasBuilding ? 0.003f : 0.04f;
+                EctoSounds.geyserEruption.at(center.worldx(), center.worldy(), 1f, eruptVol);
             }
         }
     }
@@ -228,6 +230,11 @@ public class SteamGeyser extends SteamVent {
                 isCenterVent(center) &&
                 !isNaturallyBlocked(center) &&
                 phaseTime(center) < activeTime;
+    }
+
+    public float phaseEfficiency(Tile center) {
+        if (center == null || !isCenterVent(center) || isNaturallyBlocked(center)) return 0f;
+        return isActivePhase(center) ? activeEfficiency : passiveEfficiency;
     }
 
     public boolean isNaturallyBlocked(Tile center) {

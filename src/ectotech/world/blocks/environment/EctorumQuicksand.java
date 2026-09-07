@@ -39,7 +39,9 @@ public class EctorumQuicksand extends Floor {
             registered = true;
 
             Events.run(EventType.Trigger.update, () -> {
-                if (!Vars.net.client() && !Vars.state.isEditor()) updateBuildings();
+                if (Vars.state.isGame() && !Vars.state.isPaused() && !Vars.net.client() && !Vars.state.isEditor()) {
+                    updateBuildings();
+                }
             });
         }
     }

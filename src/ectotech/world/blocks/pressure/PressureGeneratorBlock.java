@@ -2,6 +2,7 @@ package ectotech.world.blocks.pressure;
 
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import ectotech.EctoVars;
 import ectotech.world.pressure.interfaces.PressurizedGate;
 import ectotech.world.pressure.interfaces.PressurizedGenerator;
 import ectotech.world.pressure.interfaces.Pressurized;
@@ -105,9 +106,9 @@ public class PressureGeneratorBlock extends Block {
         }
 
         public void initiatePressureTransfer(float delta) {
-            if (pressure() <= ectotech.EctoVars.absMinPressure) return;
+            if (pressure() <= EctoVars.absMinPressure) return;
 
-            float availablePressure = pressure() - ectotech.EctoVars.absMinPressure;
+            float availablePressure = pressure() - EctoVars.absMinPressure;
             if (availablePressure <= 0f) return;
 
             float maxTransfer = Math.min(availablePressure, pressureFlow() * pressureFlowScale() * delta);

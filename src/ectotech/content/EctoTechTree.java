@@ -1,14 +1,13 @@
 package ectotech.content;
 
 import arc.struct.Seq;
+import mindustry.content.Items;
+import mindustry.content.Liquids;
 import mindustry.game.Objectives.*;
 
-import static mindustry.content.Items.*;
-import static mindustry.content.Liquids.*;
 import static mindustry.content.TechTree.*;
 
-import static ectotech.content.EctoItems.*;
-import static ectotech.content.EctoLiquids.*;
+import static ectotech.content.EctoUnitTypes.*;
 import static ectotech.content.EctoBlocks.*;
 import static ectotech.content.EctoSectorPresets.*;
 
@@ -36,9 +35,21 @@ public class EctoTechTree {
                 });
             });
 
+            //Drills
+            node(impulseBore, () -> {
+            });
 
-            //Power, Production, Drills and Liquid distribution tree
-            node(clivelite /*TODO: change to Impulse Bore*/, () -> {
+
+            //Power, Production, Liquid distribution tree
+            node(geyserTurbine, Seq.with(new Research(impulseBore)), () -> {
+                node(powerTransmitter, () -> {
+                    node(zincBattery, () -> {
+                        node(zincBattery, () -> {
+
+                        });
+                    });
+                });
+
                 node(cliffShredder, Seq.with(new OnSector(wasteland)), () -> {
                     node(highPressureSiliconSmelter, () -> {
 
@@ -51,6 +62,13 @@ public class EctoTechTree {
             });
 
             //Turrets and walls tree
+            node(sentinel, Seq.with(new Research(powerTransmitter)), ()  -> {
+                node(bismuthWall, () -> {
+                    node(bismuthWallLarge, () -> {
+
+                    });
+                });
+            });
 
             //Cores and imitators tree
             node(coreSparkImitator, Seq.with(new OnSector(elderPlateau)), () -> {
@@ -60,13 +78,18 @@ public class EctoTechTree {
             });
 
             //Units, unit constructors and unit distribution tree
+            node(fist, Seq.with(new OnSector(wasteland)), () -> {
+
+            });
 
             //Sectors tree
             node(theHollow, () -> {
 
                 node(wasteland, Seq.with(
-                        new SectorComplete(theHollow)
-                        // TODO new Research(ImpulseBore)
+                        new SectorComplete(theHollow),
+                        new Research(impulseBore),
+                        new Research(powerTransmitter),
+                        new Research(sentinel)
                 ), () -> {
 
                     node(foothills, Seq.with(
@@ -172,38 +195,38 @@ public class EctoTechTree {
                     });
                 });
             });
-        });
 
-        // Items and liquids tree
-        nodeProduce(bismuth, () -> {
-            nodeProduce(zinc, () -> {
-            });
-            nodeProduce(sand, () -> {
-                nodeProduce(scrap, () -> {
+            // Items and liquids tree
+            nodeProduce(EctoItems.bismuth, () -> {
+                nodeProduce(EctoItems.zinc, () -> {
                 });
-                nodeProduce(graphite, () -> {
-                    nodeProduce(lithium, () -> {
-
+                nodeProduce(Items.sand, () -> {
+                    nodeProduce(Items.scrap, () -> {
                     });
-                });
-                nodeProduce(silicon, () -> {
-                    nodeProduce(hydrodefensiveCompound, () -> {
-                    });
-                });
-            });
-            nodeProduce(water, () -> {
-            });
-            nodeProduce(sulfur, () -> {
-                nodeProduce(sulfurSolution, () -> {
-                    nodeProduce(sulfuricAcid, () -> {
-                        nodeProduce(teynorite, () -> {
-                            nodeProduce(chromium, () -> {
+                    nodeProduce(Items.graphite, () -> {
+                        nodeProduce(EctoItems.lithium, () -> {
 
-                            });
+                        });
+                    });
+                    nodeProduce(Items.silicon, () -> {
+                        nodeProduce(EctoItems.hydrodefensiveCompound, () -> {
                         });
                     });
                 });
-                nodeProduce(sulfide, () -> {
+                nodeProduce(Liquids.water, () -> {
+                });
+                nodeProduce(EctoItems.sulfur, () -> {
+                    nodeProduce(EctoLiquids.sulfurSolution, () -> {
+                        nodeProduce(EctoLiquids.sulfuricAcid, () -> {
+                            nodeProduce(EctoItems.teynorite, () -> {
+                                nodeProduce(EctoItems.chromium, () -> {
+
+                                });
+                            });
+                        });
+                    });
+                    nodeProduce(EctoItems.sulfide, () -> {
+                    });
                 });
             });
         });

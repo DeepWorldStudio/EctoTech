@@ -1,19 +1,30 @@
 package ectotech.world.blocks.distribution;
 
-import arc.math.Mathf;
+import arc.Core;
+import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.TextureRegion;
+import arc.math.Angles;
 import arc.math.geom.Geometry;
 import arc.struct.Seq;
-import ectotech.EctoVars;
+import arc.util.Nullable;
 import ectotech.world.pressure.interfaces.Pressurized;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
+import mindustry.core.Renderer;
 import mindustry.gen.Building;
+import mindustry.graphics.Lod;
 import mindustry.world.Tile;
 import mindustry.world.blocks.distribution.DirectionBridge;
+import mindustry.world.blocks.distribution.Duct;
 import mindustry.world.blocks.distribution.DuctBridge;
 
+import static mindustry.Vars.tilesize;
+
 public class PneumaticDuctBridge extends DuctBridge {
+
+    public @Nullable TextureRegion connectorRegion, bridgeConnectorRegion;
 
     public float operatingPressure = 1f;
     public float thresholdPressure = 2.8f;
@@ -35,6 +46,59 @@ public class PneumaticDuctBridge extends DuctBridge {
 
     public PneumaticDuctBridge(String name) {
         super(name);
+
+        squareSprite = false;
+    }
+
+    @Override
+    public void load() {
+        super.load();
+
+        connectorRegion = Core.atlas.find(name + "-connector");
+        bridgeConnectorRegion = Core.atlas.find(name + "-bridge-connector");
+    }
+
+    @Override
+    public void drawBridge(int rotation, float x1, float y1, float x2, float y2, @Nullable Color liquidColor) {
+        Draw.alpha(Renderer.bridgeOpacity);
+
+        float
+                angle = Angles.angle(x1, y1, x2, y2),
+                cx = (x1 + x2)/2f,
+                cy = (y1 + y2)/2f,
+                len = Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2)) - size * tilesize;
+
+        Draw.rect(bridgeRegion, cx, cy, len, bridgeRegion.height * bridgeRegion.scl(), angle);
+
+        if (liquidColor != null) {
+            Draw.color(liquidColor, liquidColor.a * Renderer.bridgeOpacity);
+            Draw.rect(bridgeLiquidRegion, cx, cy, len, bridgeLiquidRegion.height * bridgeLiquidRegion.scl(), angle);
+            Draw.color();
+            Draw.alpha(Renderer.bridgeOpacity);
+        }
+
+        if (bridgeBotRegion.found()) {
+            Draw.color(0.4f, 0.4f, 0.4f, 0.4f * Renderer.bridgeOpacity);
+            Draw.rect(bridgeBotRegion, cx, cy, len, bridgeBotRegion.height * bridgeBotRegion.scl(), angle);
+            Draw.reset();
+        }
+
+        Draw.alpha(Renderer.bridgeOpacity);
+
+        if (bridgeConnectorRegion.found()) {
+            Draw.rect(bridgeConnectorRegion, x1, y1, rotation * 90f);
+            Draw.rect(bridgeConnectorRegion, x2, y2, ((rotation + 2) & 3) * 90f);
+            Draw.reset();
+        }
+
+        Draw.alpha(Renderer.bridgeOpacity);
+
+        if(Lod.l1){
+            Draw.alpha(Lod.alpha1);
+            for (float i = 8f; i <= len + size * tilesize - 6.6f; i += 8f) {
+                Draw.rect(arrowRegion, x1 + Geometry.d4x(rotation) * i, y1 + Geometry.d4y(rotation) * i, angle);
+            }
+        }
     }
 
     @Override
@@ -102,7 +166,7 @@ public class PneumaticDuctBridge extends DuctBridge {
                                 && !out.contains(member, true)) {
                             out.add(member);
                         }
-                        break; // нашли мост — дальше не смотрим
+                        break;
                     }
                 }
             }
@@ -127,13 +191,29 @@ public class PneumaticDuctBridge extends DuctBridge {
         public void update() {
             updatePressure();
             super.update();
+
             keepAwakeIfPressurized();
         }
 
         @Override
+        public void draw() {
+            super.draw();
+
+            if (connectorRegion == null || !connectorRegion.found()) return;
+
+            for (Building other : proximity) {
+                if (other.block instanceof Duct) continue;
+
+                int side = relativeToEdge(other.tile);
+                if (side < 0) continue;
+
+                Draw.rect(connectorRegion, x, y, side * 90f);
+            }
+        }
+
+        @Override
         public boolean shouldConsume() {
-            return super.shouldConsume()
-                    && (!isPressureRequired() || pressureEfficiency() > 0f);
+            return super.shouldConsume() && (!isPressureRequired() || pressureEfficiency() > 0f);
         }
 
         @Override
@@ -166,7 +246,5 @@ public class PneumaticDuctBridge extends DuctBridge {
             super.read(read, revision);
             readPressure(read, revision);
         }
-
     }
-
 }

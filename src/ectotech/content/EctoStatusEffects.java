@@ -5,11 +5,11 @@ import mindustry.content.StatusEffects;
 import mindustry.type.StatusEffect;
 
 public class EctoStatusEffects {
-    public static StatusEffect quicksandStuck;
+    public static StatusEffect sanded;
 
     public static void load() {
 
-        quicksandStuck = new StatusEffect("quicksand-stuck") {{
+        sanded = new StatusEffect("quicksand-stuck") {{
             color = Color.valueOf("F2B16F");
             speedMultiplier = 0.7f;
             reloadMultiplier = 0.6f;

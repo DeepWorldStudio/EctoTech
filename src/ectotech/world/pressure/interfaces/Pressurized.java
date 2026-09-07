@@ -4,6 +4,7 @@ import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.util.Strings;
 import ectotech.EctoVars;
+import ectotech.game.EctoRules;
 import ectotech.world.pressure.utils.PressureModule;
 import arc.util.io.Reads;
 import arc.util.io.Writes;

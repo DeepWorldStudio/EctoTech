@@ -45,6 +45,9 @@ public class PneumaticOverflowDuct extends OverflowDuct {
         saveConfig = true;
         clearOnDoubleTap = true;
 
+        drawDynamic = true;
+        drawCached = false;
+
         squareSprite = false;
 
         config(Item.class, (PneumaticOverflowDuctBuild tile, Item item) -> tile.sortItem = item);

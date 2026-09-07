@@ -3,6 +3,7 @@ package ectotech.world.blocks.production;
 import arc.Core;
 import arc.func.Cons;
 import arc.func.Intc2;
+import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
@@ -19,8 +20,7 @@ import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
 import mindustry.world.meta.StatValues;
 
-import static mindustry.Vars.tilesize;
-import static mindustry.Vars.world;
+import static mindustry.Vars.*;
 
 public class MultipleWallCrafter extends WallCrafter {
 
@@ -78,8 +78,23 @@ public class MultipleWallCrafter extends WallCrafter {
 
     @Override
     public void drawPlace(int x, int y, int rotation, boolean valid) {
-        float eff = getEfficiency(x, y, rotation, null, null);
-        drawPlaceText(Core.bundle.formatFloat("bar.drillspeed", 60f / drillTime * eff, 2), x, y, valid);
+        AttributeWall dominant = dominantOre(x, y, rotation);
+        if (dominant == null) return;
+
+        float eff = sumAttribute(x, y, rotation, dominant.attribute, null, null);
+        if (eff <= 0f) return;
+
+        Item item = dominant.item;
+        float width = drawPlaceText(Core.bundle.formatFloat("bar.drillspeed", 60f / drillTime * eff, 2), x, y, valid);
+
+        float dx = x * tilesize + offset - width / 2f - 4f;
+        float dy = y * tilesize + offset + size * tilesize / 2f + 5f;
+        float s = iconSmall / 4f;
+
+        Draw.mixcol(Color.darkGray, 1f);
+        Draw.rect(item.fullIcon, dx, dy - 1f, s, s);
+        Draw.reset();
+        Draw.rect(item.fullIcon, dx, dy, s, s);
     }
 
     @Override

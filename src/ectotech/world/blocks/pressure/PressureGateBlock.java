@@ -3,6 +3,7 @@ package ectotech.world.blocks.pressure;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.EctoVars;
+import ectotech.game.EctoRules;
 import ectotech.world.pressure.interfaces.PressurizedGate;
 import ectotech.world.pressure.interfaces.PressurizedGenerator;
 import ectotech.world.pressure.interfaces.Pressurized;
@@ -167,7 +168,7 @@ public class PressureGateBlock extends Block {
 
                 if (portRequest <= 0f) continue;
 
-                float takenPressureAmount = Math.min(portRequest, Math.max(0f, targetBuilding.pressure() - ectotech.EctoVars.absMinPressure));
+                float takenPressureAmount = Math.min(portRequest, Math.max(0f, targetBuilding.pressure() - EctoVars.absMinPressure));
 
                 if (takenPressureAmount > 0f) {
                     targetBuilding.applyExternalPressureChange(-takenPressureAmount);

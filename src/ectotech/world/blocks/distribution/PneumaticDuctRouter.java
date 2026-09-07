@@ -40,6 +40,9 @@ public class PneumaticDuctRouter extends DuctRouter {
         saveConfig = false;
         clearOnDoubleTap = false;
 
+        drawDynamic = false;
+        drawCached = true;
+
         squareSprite = false;
     }
 

@@ -7,7 +7,10 @@ import arc.Core;
 import arc.graphics.g2d.TextureRegion;
 import arc.struct.ObjectMap;
 import arc.util.Log;
+import ectotech.content.EctoPlanets;
+import mindustry.Vars;
 import mindustry.type.Item;
+import mindustry.type.Planet;
 
 public class EctoVanillaSpritesSwapper {
     private static final ObjectMap<Item, TextureRegion> originalFull = new ObjectMap<>();
@@ -20,11 +23,11 @@ public class EctoVanillaSpritesSwapper {
         originalFull.put(item, new TextureRegion(item.fullIcon));
         originalUi.put(item,   new TextureRegion(item.uiIcon));
 
-        TextureRegion alt = Core.atlas.find(altRegion);
+        TextureRegion alt = Core.atlas.find("ectotech-" + altRegion);
         altSprites.put(item, alt);
 
         if (!alt.found()) {
-            Log.warn("EctoTech: vanilla sprite override region not found: @", altRegion);
+            Log.warn("EctoTech: vanilla sprite override region not found: @", "ectotech-" + altRegion);
         }
     }
 
@@ -48,4 +51,26 @@ public class EctoVanillaSpritesSwapper {
 
         isOverrideActive = isEctorum;
     }
-}
+
+    /**Updates UI and Database alt icons*/
+    public static void updateUI() {
+        Runnable restoreFromGame = () -> {
+            boolean ectorum = Vars.state.isPlaying() && Vars.state.rules.planet == EctoPlanets.ectorum;
+            EctoVanillaSpritesSwapper.apply(ectorum);
+        };
+
+        Vars.ui.database.update(() -> {
+            if (!Vars.ui.database.isShown()) return;
+            Planet p = EctoUiPlanetReader.fromDatabase(Vars.ui.database);
+            EctoVanillaSpritesSwapper.apply(p == EctoPlanets.ectorum);
+        });
+        Vars.ui.database.hidden(restoreFromGame);
+
+        Vars.ui.research.update(() -> {
+            if (!Vars.ui.research.isShown()) return;
+            Planet p = EctoUiPlanetReader.fromResearch(Vars.ui.research);
+            EctoVanillaSpritesSwapper.apply(p == EctoPlanets.ectorum);
+        });
+        Vars.ui.research.hidden(restoreFromGame);
+    }
+ }

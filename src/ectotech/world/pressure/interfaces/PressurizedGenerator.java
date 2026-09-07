@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import ectotech.EctoVars;
+import ectotech.game.EctoRules;
 
 /** Pressure compressors interface */
 public interface PressurizedGenerator extends Pressurized {

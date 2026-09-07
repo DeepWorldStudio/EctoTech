@@ -1,7 +1,9 @@
 package ectotech.content;
 
 import arc.Core;
+import arc.graphics.Color;
 import arc.graphics.gl.Shader;
+import arc.util.Log;
 import arc.util.Time;
 import mindustry.Vars;
 import mindustry.graphics.CacheLayer;
@@ -9,7 +11,7 @@ import mindustry.graphics.Shaders;
 
 public class EctoShaders {
 
-    public static CacheLayer quicksandHeat;
+    public static CacheLayer quicksandHeat, sulfurSolution;
 
     public static GeyserWaterShader geyserWater;
 
@@ -20,20 +22,17 @@ public class EctoShaders {
                 new Shaders.SurfaceShader("quicksand")
         );
 
-        CacheLayer.add(quicksandHeat);
+        sulfurSolution = new CacheLayer.ShaderLayer(
+                new Shaders.SurfaceShader("sulfur-solution")
+        );
 
-        arc.util.Log.info("[GeyserShader] default.vert exists: @", Vars.tree.get("shaders/default.vert").exists());
-        arc.util.Log.info("[GeyserShader] screenspace.vert exists: @", Vars.tree.get("shaders/screenspace.vert").exists());
-        arc.util.Log.info("[GeyserShader] geyser-water.frag exists: @", Vars.tree.get("shaders/geyser-water.frag").exists());
+        CacheLayer.add(quicksandHeat, sulfurSolution);
 
         geyserWater = new GeyserWaterShader();
-
-        arc.util.Log.info("[GeyserShader] compiled successfully: @", geyserWater.isCompiled());
-        arc.util.Log.info("[GeyserShader] log: @", geyserWater.getLog());
     }
 
     public static class GeyserWaterShader extends Shader {
-        public arc.graphics.Color waterColor = arc.graphics.Color.valueOf("4a9eff");
+        public Color waterColor = Color.valueOf("4a9eff");
 
         public GeyserWaterShader() {
             super(

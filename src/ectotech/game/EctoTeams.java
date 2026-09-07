@@ -6,22 +6,22 @@ import mindustry.game.Team;
 
 public final class EctoTeams {
 
-    public static Team ectoTeam;
-    public static final String ectoTeamName = "awakened";
+    public static Team ectorumTeam;
+    public static final String ectorumTeamName = "awakened";
 
     private EctoTeams(){}
 
     public static void init(){
-        ectoTeam = findOrClaimTeam();
+        ectorumTeam = findOrClaimTeam();
 
         // Палитра команды (3 оттенка)
-        ectoTeam.setPalette(
-                Color.valueOf("a47ac4"),
-                Color.valueOf("8a5aa4"),
-                Color.valueOf("6a3a84")
+        ectorumTeam.setPalette(
+                Color.valueOf("9FC7DD"),
+                Color.valueOf("78A8C4"),
+                Color.valueOf("5C80A2")
         );
 
-        Log.info("Registered Awakened team at id/index: @", ectoTeam.id);
+        Log.info("Registered Awakened team at id/index: @", ectorumTeam.id);
     }
 
     private static Team findOrClaimTeam(){
@@ -29,13 +29,13 @@ public final class EctoTeams {
         if(existing != null) return existing;
 
         Team team = findFirstNumberedPlaceholderTeam();
-        team.name = EctoTeams.ectoTeamName;
+        team.name = EctoTeams.ectorumTeamName;
         return team;
     }
 
     private static Team findTeamByName(){
         for(Team t : Team.all){
-            if(t != null && EctoTeams.ectoTeamName.equals(t.name)) return t;
+            if(t != null && EctoTeams.ectorumTeamName.equals(t.name)) return t;
         }
         return null;
     }

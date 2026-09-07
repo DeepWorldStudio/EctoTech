@@ -5,9 +5,15 @@ import mindustry.type.Liquid;
 import mindustry.content.StatusEffects;
 
 public class EctoLiquids {
+    public static Liquid
+            // Этап 1
+            sulfurSolution, sulfuricAcid,
+            // Этап 3
+            boricAcid,
+            // Этап 4
+            thermoplasma, thermodium;
 
-    // Этап 1
-    public static Liquid sulfurSolution, sulfuricAcid, boricAcid, thermoplasma, thermodium;
+
 
     public static void load() {
 

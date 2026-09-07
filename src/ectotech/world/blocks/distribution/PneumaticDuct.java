@@ -1,14 +1,20 @@
 package ectotech.world.blocks.distribution;
 
-import arc.math.Mathf;
-import ectotech.EctoVars;
+import arc.Core;
+import arc.graphics.g2d.TextureRegion;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
+import ectotech.content.EctoBlocks;
 import ectotech.world.pressure.interfaces.Pressurized;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
+import mindustry.content.Blocks;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.distribution.Duct;
+import mindustry.world.blocks.distribution.DuctBridge;
+import mindustry.world.blocks.distribution.ItemBridge;
 
 public class PneumaticDuct extends Duct {
 
@@ -44,6 +50,19 @@ public class PneumaticDuct extends Duct {
                 b::pressureBarColor,
                 b::pressureBarFraction
         ));
+    }
+
+    @Override
+    public void init(){
+        super.init();
+
+        if (bridgeReplacement == null || bridgeReplacement == Blocks.ductBridge || !(bridgeReplacement instanceof PneumaticDuctBridge || bridgeReplacement instanceof DuctBridge || bridgeReplacement instanceof ItemBridge)) bridgeReplacement = EctoBlocks.pneumaticDuctBridge;
+        //if(junctionReplacement == null) junctionReplacement = Blocks.ductJunction;
+    }
+
+    @Override
+    public TextureRegion[] icons() {
+        return new TextureRegion[] {Core.atlas.find(name + "-bottom", "duct-bottom"), topRegions[0]};
     }
 
     public class PneumaticDuctBuild extends DuctBuild implements Pressurized, PressurizedNetworkMember {
@@ -86,7 +105,6 @@ public class PneumaticDuct extends Duct {
         @Override
         public boolean canPressureInputFrom(Building source, int side) {
             if (!armored) return side != rotation;
-            // else (armored)
             if (side == ((rotation + 2) & 3)) return true;
             if (side == rotation) return false;
 
@@ -124,13 +142,13 @@ public class PneumaticDuct extends Duct {
         }
 
         @Override
-        public void write(arc.util.io.Writes write) {
+        public void write(Writes write) {
             super.write(write);
             writePressure(write);
         }
 
         @Override
-        public void read(arc.util.io.Reads read, byte revision) {
+        public void read(Reads read, byte revision) {
             super.read(read, revision);
             readPressure(read, revision);
         }

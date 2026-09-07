@@ -10,9 +10,9 @@ public class EctoItems {
             // Этап 1
             bismuth, zinc, sulfur, hydrodefensiveCompound, sulfide,
             // Этап 2
-            teynorite, chromium, lithium, electrosteel,
+            teynorite, chromium, lithium, powersteel,
             // Этап 3
-            borum, magnetite,
+            borum, magnetite, centralProcessor,
             // Этап 4
             kyanite, refinedRadiance;
 
@@ -22,12 +22,12 @@ public class EctoItems {
         // Этап 1
         bismuth = new Item("bismuth", Color.valueOf("5db56a")) {{
             hardness = 1;
-            cost = 0.8f;
+            cost = 0.9f;
         }};
 
         zinc = new Item("zinc", Color.valueOf("d4d4d4")) {{
             hardness = 1;
-            cost = 0.6f;
+            cost = 0.7f;
         }};
 
         sulfur = new Item("sulfur", Color.valueOf("e8d84a")) {{
@@ -35,6 +35,7 @@ public class EctoItems {
             cost = 0.7f;
             flammability = 0.3f;
             buildable = false;
+            lowPriority = true;
         }};
 
         hydrodefensiveCompound = new Item("hydrodefensive-compound", Color.valueOf("7a9fb5")) {{
@@ -42,7 +43,7 @@ public class EctoItems {
         }};
 
         sulfide = new Item("sulfide", Color.valueOf("A2BA27")) {{
-
+            cost = 0.9f;
         }};
 
         // Этап 2

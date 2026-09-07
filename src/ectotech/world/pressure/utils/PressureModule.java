@@ -5,7 +5,9 @@ import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.EctoVars;
+import ectotech.game.EctoRules;
 import ectotech.world.pressure.interfaces.Pressurized;
+import mindustry.Vars;
 
 public class PressureModule {
 
@@ -54,7 +56,7 @@ public class PressureModule {
         }
 
         if (pressure >= crit) {
-            float damage = EctoVars.pressureCriticalDamageMultiplier * outflowCalculate(owner) * arc.util.Time.delta;
+            float damage = EctoRules.of(Vars.state.rules).pressureCriticalDamageMultiplier * outflowCalculate(owner) * Time.delta;
 
             owner.self().damage(damage);
             owner.onPressureCritical();
