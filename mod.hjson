@@ -14,10 +14,10 @@ main: "ectotech.EctoTech"
 description: "Explore the new planet Ectorum with new technologies and unique features."
 
 # the mod version
-version: 0.01-alpha
+version: 0.05-alpha
 
 # the minimum game build required to run this mod
-minGameVersion: 154
+minGameVersion: 159
 
 # this is a java mod
 java: true
