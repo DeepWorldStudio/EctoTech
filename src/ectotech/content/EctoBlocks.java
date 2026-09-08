@@ -893,17 +893,17 @@ public class EctoBlocks {
 
         sentinel = new AmmoTargetItemTurret("sentinel") {{
             requirements(Category.turret, with(EctoItems.bismuth, 80, Items.graphite, 70));
-
-            Effect sfe = new MultiEffect(Fx.shootBigColor, Fx.colorSparkBig);
+//new MultiEffect(EctoFx.shootTurretBigColor, Fx.colorSparkBig);
+            Effect sfe = EctoFx.shootTurretBigColor;
 
             ammo(
-                    EctoItems.bismuth, new BasicBulletType(5.5f, 25) {{
+                    EctoItems.bismuth, new BasicBulletType(16, 25) {{
                         width = 14f;
                         height = 15f;
-
+                        lifetime = 10;
                         hitSize = 10f;
                         shootEffect = sfe;
-                        smokeEffect = Fx.shootBigSmoke;
+                        smokeEffect = Fx.none;
                         ammoMultiplier = 1;
 
                         pierce = false;
@@ -927,13 +927,14 @@ public class EctoBlocks {
                         knockback = 0.6f;
                     }},
 
-                    Items.graphite, new BasicBulletType(7.5f, 45) {{
+                    Items.graphite, new BasicBulletType(16.6666666f, 45) {{
                         width = 16f;
                         height = 17f;
+                        lifetime = 12;
 
                         hitSize = 8f;
                         shootEffect = sfe;
-                        smokeEffect = Fx.shootBigSmoke;
+                        smokeEffect = Fx.none;
                         ammoMultiplier = 2;
                         rangeChange = 5f * 8f;
 
@@ -975,7 +976,7 @@ public class EctoBlocks {
             shootSound = Sounds.shootScepter;
 
             targetUnderBlocks = false;
-            shake = 1f;
+            shake = 2.85f;
             ammoPerShot = 2;
             drawer = new DrawTurret("ectorum-") {{
                 parts.add(new RegionPart("-barrel") {{
@@ -983,8 +984,10 @@ public class EctoBlocks {
                     moveY = -3.2f;
                     under = true;
                     recoilTime = 40f;
+                    heatColor = new Color(Pal.turretHeat).a(0.6f);
                 }});
             }};
+            cooldownTime = 35;
 
             shootY = 7f;
             outlineColor = Pal.darkOutline;
