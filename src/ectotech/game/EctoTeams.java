@@ -41,7 +41,7 @@ public final class EctoTeams {
     }
 
     private static Team findFirstNumberedPlaceholderTeam(){
-        for(int i = 7; i < Team.all.length; i++){
+        for(int i = 6; i < Team.all.length; i++){
             Team team = Team.all[i];
             if(team != null && ("team#" + i).equals(team.name)){
                 return team;

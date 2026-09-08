@@ -116,7 +116,7 @@ public class EctoBlocks {
             coreSparkImitator, coreSunriseImitator,
 
             // turrets
-            sentinel, // TODO: "Страж" <- первая турель
+            sentinel,
             dissection // TODO: "Рассечение"
 
             // unit factories
@@ -663,7 +663,7 @@ public class EctoBlocks {
 
         armoredPneumaticDuct = new PneumaticDuct("armored-pneumatic-duct") {{
             requirements(Category.distribution, with(EctoItems.bismuth, 2, EctoItems.chromium, 1));
-            health = 180;
+            health = 250;
             speed = 7f;
             armored = true;
             researchCost = with(EctoItems.bismuth, 150, EctoItems.chromium, 70);
