@@ -6,6 +6,7 @@ import arc.util.Time;
 import ectotech.content.*;
 import ectotech.game.EctoFogCleanser;
 import ectotech.graphics.EctoVanillaSpritesSwapper;
+import ectotech.ui.EctoTeamsUI;
 import ectotech.ui.dialogs.EctoCampaignRulesDialog;
 import ectotech.ui.dialogs.EctoCustomRulesDialog;
 import mindustry.Vars;
@@ -33,6 +34,7 @@ public class EctoTech extends Mod {
             Vars.ui.campaignRules = new EctoCampaignRulesDialog();
 
             EctoCustomRulesDialog.install();
+            EctoTeamsUI.install();
 
             EctoVanillaSpritesSwapper.register(Items.sand, "sand");
             EctoVanillaSpritesSwapper.register(Items.graphite, "graphite");
