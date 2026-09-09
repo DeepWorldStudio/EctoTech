@@ -74,7 +74,7 @@ public class EctoTech extends Mod {
         EctoBlocks.load();
         EctoPlanets.load();
         EctoSectorPresets.load();
-        EctoTechTree.load();
+        EctorumTechTree.load();
 
         Log.info("EctoTech content loaded successfully.");
     }

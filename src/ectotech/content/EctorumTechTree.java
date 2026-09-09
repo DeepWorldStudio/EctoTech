@@ -12,14 +12,14 @@ import static ectotech.content.EctoBlocks.*;
 import static ectotech.content.EctoSectorPresets.*;
 
 
-public class EctoTechTree {
+public class EctorumTechTree {
     public static void load() {
         Seq<Objective> ectorumSector = Seq.with(new OnPlanet(EctoPlanets.ectorum));
 
         EctoPlanets.ectorum.techTree = nodeRoot("ectorum", coreSpark, true, () -> {
 
             // Item distribution tree
-            node(pneumaticDuct, ectorumSector, () -> {
+            node(pneumaticDuct, ectorumSector.copy().add(new Research(powerTransmitter)), () -> {
                 node(pneumaticDuctRouter, () -> {
                     node(pneumaticDuctBridge, () -> {
                         node(armoredPneumaticDuct, () -> {
@@ -36,13 +36,13 @@ public class EctoTechTree {
             });
 
             //Drills
-            node(impulseBore, () -> {
+            node(impulseBore, ectorumSector.copy().add(new Research(geyserTurbine)), () -> {
             });
 
 
             //Power, Production, Liquid distribution tree
-            node(geyserTurbine, Seq.with(new Research(impulseBore)), () -> {
-                node(powerTransmitter, () -> {
+            node(geyserTurbine, ectorumSector, () -> {
+                node(powerTransmitter, Seq.with(new Research(impulseBore)), () -> {
                     node(zincBattery, () -> {
                         node(zincBattery, () -> {
 
@@ -79,7 +79,11 @@ public class EctoTechTree {
 
             //Units, unit constructors and unit distribution tree
             node(fist, Seq.with(new OnSector(wasteland)), () -> {
+                node(echo, () -> {
+                  node(spasm, Seq.with(new Research(powerTransmitter)), () -> {
 
+                  });
+                });
             });
 
             //Sectors tree
