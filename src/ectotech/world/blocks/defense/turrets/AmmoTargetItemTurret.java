@@ -1,13 +1,11 @@
 package ectotech.world.blocks.defense.turrets;
 
+import ectotech.world.meta.EctoStatValues;
 import mindustry.entities.bullet.BulletType;
 import mindustry.gen.Building;
 import mindustry.gen.Unit;
-import mindustry.type.Item;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.meta.Stat;
-
-import static mindustry.Vars.iconSmall;
 
 public class AmmoTargetItemTurret extends ItemTurret {
 
@@ -33,27 +31,8 @@ public class AmmoTargetItemTurret extends ItemTurret {
         super.setStats();
 
         // Убираем блочные "да/нет" — они вводят в заблуждение.
-        stats.remove(Stat.targetsAir);
-        stats.remove(Stat.targetsGround);
-
-        // Показываем, КАКИЕ патроны бьют воздух и КАКИЕ — землю.
-        stats.add(Stat.targetsAir, table -> table.table(t -> {
-            t.left();
-            for (Item item : ammoTypes.keys()) {
-                if (ammoTypes.get(item).collidesAir) {
-                    t.image(item.uiIcon).size(iconSmall).padRight(4f);
-                }
-            }
-        }).left());
-
-        stats.add(Stat.targetsGround, table -> table.table(t -> {
-            t.left();
-            for (Item item : ammoTypes.keys()) {
-                if (ammoTypes.get(item).collidesGround) {
-                    t.image(item.uiIcon).size(iconSmall).padRight(4f);
-                }
-            }
-        }).left());
+        stats.remove(Stat.ammo);
+        stats.add(Stat.ammo, EctoStatValues.ammo(ammoTypes));
     }
 
     public class AmmoTargetItemTurretBuild extends ItemTurretBuild {
