@@ -644,7 +644,7 @@ public class EctoBlocks {
         pneumaticDuct = new PneumaticDuct("pneumatic-duct") {{
             requirements(Category.distribution, with(EctoItems.bismuth, 1));
             health = 80;
-            speed = 7f;
+            speed = 6f;
             researchCost = with(EctoItems.bismuth, 15);
 
             operatingPressure = 1f;
@@ -664,7 +664,7 @@ public class EctoBlocks {
         armoredPneumaticDuct = new PneumaticDuct("armored-pneumatic-duct") {{
             requirements(Category.distribution, with(EctoItems.bismuth, 2, EctoItems.chromium, 1));
             health = 250;
-            speed = 7f;
+            speed = 6f;
             armored = true;
             researchCost = with(EctoItems.bismuth, 150, EctoItems.chromium, 70);
 
@@ -837,7 +837,7 @@ public class EctoBlocks {
 
         cliffShredder = new MultipleWallCrafter("cliff-shredder") {{
             requirements(Category.production, with(EctoItems.bismuth, 20, EctoItems.zinc, 8));
-            consumePower(14 / 60f);
+            consumePower(25 / 60f);
 
             drillTime = 120f;
             size = 2;
