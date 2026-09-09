@@ -27,17 +27,16 @@ public final class EctoTeamsUI {
     /** HUD "редактировать в игре": пересобираем ряд команд с нашей командой. */
     private static void installHudTeams(){
         Team team = EctoTeams.ectorumTeam;
-        if(team == null) return;
+        if (team == null) return;
 
-        if(!(ui.hudGroup.find("editor") instanceof Table editorHud)) return;
-        if(!(editorHud.find("teams") instanceof Table outer)) return;
-        if(!(outer.parent instanceof Table parent)) return;
+        if (!(ui.hudGroup.find("editor") instanceof Table editorHud)) return;
+        if (!(editorHud.find("teams") instanceof Table outer)) return;
+        if (!(outer.parent instanceof Table parent)) return;
 
-        if(outer.getChildren().isEmpty()
-                || !(outer.getChildren().first() instanceof Table inner)) return;
+        if (outer.getChildren().isEmpty() || !(outer.getChildren().first() instanceof Table inner)) return;
 
-        if(inner.find("ectotech-awakened-hud") != null) return;
-        if(inner.getCells().isEmpty()) return;
+        if (inner.find("ectotech-awakened-hud") != null) return;
+        if (inner.getCells().isEmpty()) return;
 
         var panelCell = parent.getCell(outer);
         var arrowCell = inner.getCells().peek();
@@ -69,7 +68,7 @@ public final class EctoTeamsUI {
     private static void installEditorTeams(){
         ui.editor.shown(() -> {
             Element anchor = findTeamAnchor(ui.editor);
-            if(anchor == null || !(anchor.parent instanceof Table tools)) return;
+            if (anchor == null || !(anchor.parent instanceof Table tools)) return;
 
             Team team = EctoTeams.ectorumTeam;
             ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNoneTogglei);
@@ -88,7 +87,7 @@ public final class EctoTeamsUI {
             if(e instanceof ImageButton b && b.getStyle().imageUpColor == Team.blue.color) return e;
             if(e instanceof Group g){
                 Element found = findTeamAnchor(g);
-                if(found != null) return found;
+                if (found != null) return found;
             }
         }
         return null;
