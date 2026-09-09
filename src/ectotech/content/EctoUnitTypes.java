@@ -94,7 +94,7 @@ public class EctoUnitTypes {
             stepSoundPitch = 1f;
             stepSoundVolume = 0.25f;
 
-            legCount = 6;
+            legCount = 4;
             legLength = 8f;
             legGroupSize = 3;
 
@@ -261,11 +261,11 @@ public class EctoUnitTypes {
             buildSpeed = 0.8f;
 
             mineTier = 1;
-            mineSpeed = 2.4f;
+            mineSpeed = 4f;
             mineWalls = true;
             mineFloor = false;
 
-            fogRadius = 0f;
+            fogRadius = 5f;
             targetable = true;
             hittable = true;
 
@@ -281,8 +281,8 @@ public class EctoUnitTypes {
                 reload = 15f;
                 layerOffset = -0.001f;
 
-                x = 3.5f;
-                y = 2.86f;
+                x = 4f;
+                y = 2.8f;
 
                 inactiveWeaponOffset = 0.6f;
                 inactiveColor = Color.valueOf("78726F");
