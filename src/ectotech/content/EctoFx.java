@@ -32,6 +32,12 @@ public class EctoFx {
         });
     }),
 
+    regenParticleColor = new Effect(100f, e -> {
+        color(e.color);
+
+        Fill.square(e.x, e.y, e.fslope() * 1.5f + 0.14f, 45f);
+    }),
+
     shootTurretBigColor = new Effect(9, e->{
         float offset = e.fin() * 16 + 2;
         float offsetX = Mathf.cosDeg(e.rotation) * offset, offsetY = Mathf.sinDeg(e.rotation) * offset;

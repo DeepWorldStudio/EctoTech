@@ -5,11 +5,9 @@ import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.game.Objectives.*;
 
-import static mindustry.content.TechTree.*;
-
-import static ectotech.content.EctoUnitTypes.*;
 import static ectotech.content.EctoBlocks.*;
 import static ectotech.content.EctoSectorPresets.*;
+import static mindustry.content.TechTree.*;
 
 
 public class EctorumTechTree {
@@ -62,10 +60,12 @@ public class EctorumTechTree {
             });
 
             //Turrets and walls tree
-            node(sentinel, Seq.with(new Research(powerTransmitter)), ()  -> {
-                node(bismuthWall, () -> {
-                    node(bismuthWallLarge, () -> {
+            node(radarDevice, Seq.with(new Research(powerTransmitter)), () -> {
+                node(sentinel, ()  -> {
+                    node(bismuthWall, () -> {
+                        node(bismuthWallLarge, () -> {
 
+                        });
                     });
                 });
             });
@@ -78,11 +78,19 @@ public class EctorumTechTree {
             });
 
             //Units, unit constructors and unit distribution tree
-            node(fist, Seq.with(new OnSector(wasteland)), () -> {
-                node(echo, () -> {
-                  node(spasm, Seq.with(new Research(powerTransmitter)), () -> {
+            node(mechAssemblyUnit, Seq.with(new OnSector(wasteland)), () -> {
+                node(EctoUnitTypes.fist);
 
-                  });
+                node(groundReassemblyUnit, Seq.with(new OnSector(recyclingFacility)), () -> {
+
+                });
+
+                node(spiderAssemblyUnit, Seq.with(new OnSector(ruins)), () -> {
+                    node(EctoUnitTypes.echo);
+                });
+
+                node(airAssemblyUnit, Seq.with(new OnSector(metalRidge)), () -> {
+                    node(EctoUnitTypes.spasm);
                 });
             });
 

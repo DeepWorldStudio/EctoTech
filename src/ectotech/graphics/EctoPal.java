@@ -6,6 +6,8 @@ public class EctoPal {
 
     public static Color
 
+
+    darkGreenShot = Color.valueOf("1B2619"),
     spasmLaser = Color.valueOf("FF954F"),
-    darkGreenShot = Color.valueOf("1B2619");
+    casingSelfRegen = Color.valueOf("BABABA").a(0.8f);
 }

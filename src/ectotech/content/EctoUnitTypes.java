@@ -245,7 +245,7 @@ public class EctoUnitTypes {
             faceTarget = true;
             targetPriority = -2;
             lowAltitude = false;
-            fogRadius = 4;
+            fogRadius = 0;
 
             speed = 5f;
             rotateSpeed = 8f;
@@ -264,8 +264,6 @@ public class EctoUnitTypes {
             mineSpeed = 4f;
             mineWalls = true;
             mineFloor = false;
-
-            fogRadius = 5f;
             targetable = true;
             hittable = true;
 
