@@ -9,6 +9,7 @@ import ectotech.graphics.EctoVanillaSpritesSwapper;
 import ectotech.ui.EctoTeamsUI;
 import ectotech.ui.dialogs.EctoCampaignRulesDialog;
 import ectotech.ui.dialogs.EctoCustomRulesDialog;
+import ectotech.world.blocks.defense.utils.CasedWallFactory;
 import mindustry.Vars;
 import mindustry.content.Items;
 import mindustry.game.EventType;
@@ -22,6 +23,8 @@ public class EctoTech extends Mod {
 
     public EctoTech() {
         Log.info("Loaded EctoTech constructor.");
+
+        Events.on(EventType.ModContentLoadEvent.class, e -> CasedWallFactory.generate());
     }
 
     @Override
