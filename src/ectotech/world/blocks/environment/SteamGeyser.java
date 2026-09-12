@@ -10,14 +10,15 @@ import arc.struct.IntSet;
 import arc.struct.Seq;
 import arc.util.Time;
 import ectotech.content.EctoAttributes;
+import ectotech.content.EctoFx;
 import ectotech.content.EctoShaders;
 import ectotech.content.EctoSounds;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
+import mindustry.entities.Effect;
 import mindustry.game.EventType;
 import mindustry.gen.Groups;
-import mindustry.gen.Sounds;
 import mindustry.graphics.Layer;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.SteamVent;
@@ -35,6 +36,10 @@ public class SteamGeyser extends SteamVent {
     public float unitDamageTaken = 0.168f;
 
     public Color geyserWaterColor = Color.valueOf("4a9eff");
+
+    public Effect baseEffect = Fx.ventSteam;
+
+    public Effect burstEffect = EctoFx.geyserBurst;
 
     private static final float activeEffectSpacing = 4f;
     private static final float passiveEffectSpacing = 25f;
@@ -108,9 +113,9 @@ public class SteamGeyser extends SteamVent {
 
             if ((state.data += Time.delta) >= spacing) {
                 if (active) {
-                    Fx.ventSteam.at(center.worldx(), center.worldy(), steamColor);
+                    baseEffect.at(center.worldx(), center.worldy(), steamColor);
                     if (Mathf.chance(0.4f)) {
-                        Fx.hitLiquid.at(center.worldx(), center.worldy(), Color.valueOf("4a9eff"));
+                        burstEffect.at(center.worldx(), center.worldy(), Color.valueOf("4a9eff"));
                     }
                 } else {
                     Fx.vapor.at(center.worldx(), center.worldy(), steamColor);
