@@ -227,5 +227,7 @@ public class EctoStatValues extends StatValues {
     private static TextureRegion icon(UnlockableContent t) {
         return t.uiIcon;
     }
+
+
 }
 

@@ -1,10 +1,13 @@
 package ectotech;
 
+import arc.Core;
 import arc.Events;
 import arc.util.Log;
 import arc.util.Time;
 import ectotech.content.*;
 import ectotech.game.EctoFogCleanser;
+import ectotech.game.EctoTeams;
+import ectotech.graphics.EctoIconLoader;
 import ectotech.graphics.EctoVanillaSpritesSwapper;
 import ectotech.ui.EctoTeamsUI;
 import ectotech.ui.dialogs.EctoCampaignRulesDialog;
@@ -15,7 +18,6 @@ import mindustry.content.Items;
 import mindustry.game.EventType;
 import mindustry.game.Team;
 import mindustry.mod.Mod;
-import ectotech.game.EctoTeams;
 
 public class EctoTech extends Mod {
 
@@ -35,6 +37,8 @@ public class EctoTech extends Mod {
 
         Events.on(EventType.ClientLoadEvent.class, e -> {
             Vars.ui.campaignRules = new EctoCampaignRulesDialog();
+
+            Core.app.post(EctoIconLoader::load);
 
             EctoCustomRulesDialog.install();
             EctoTeamsUI.install();

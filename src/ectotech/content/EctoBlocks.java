@@ -2,7 +2,6 @@ package ectotech.content;
 
 import arc.Core;
 import arc.graphics.Color;
-import arc.graphics.g2d.TextureRegion;
 import arc.math.Interp;
 import ectotech.graphics.EctoPal;
 import ectotech.world.blocks.defense.SelfRegenWallCasing;
@@ -36,6 +35,7 @@ import mindustry.type.ItemStack;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.Wall;
+import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.power.Battery;
 import mindustry.world.blocks.production.GenericCrafter;
@@ -54,9 +54,9 @@ public class EctoBlocks {
 
     public static Block
 
-            //natural environment
+            // natural environment
             malachite, charoit, ebonite,
-            crushedClivelite, clivelite, smoothClivelite,
+            smoothClivelite, clivelite, crushedClivelite,
             bluishMoss,
             ectorumSand, ectorumQuicksand, ectorumSandstone, boricSandWater,
             boricWater, deepBoricWater,
@@ -75,7 +75,7 @@ public class EctoBlocks {
             charoitGeyser, eboniteGeyser, cliveliteGeyser, sulfurGeyser,
 
             // envWalls
-            malachiteWall, charoitWall, eboniteWall, cliveliteWall, ectorumSandstoneWall, sulfurWall, pyritedSulfurWall, boricIceWall, thoriumiteWall, kyanicStoneWall,
+            malachiteWall, charoitWall, eboniteWall, cliveliteWall, mossyCliveliteWall, bluishMossWall, ectorumSandstoneWall, sulfurWall, pyritedSulfurWall, boricIceWall, thoriumiteWall, kyanicStoneWall,
             polishedMarbleWall,
 
             // boulders and custom env decorations
@@ -100,7 +100,7 @@ public class EctoBlocks {
             pressureSource, pressureVoid,
 
             // walls
-            bismuthWall, bismuthWallLarge, pressurizedWall, pressurizedWallLarge, powersteelWall /*TODO: литий + электросталь*/, powersteelWallLarge, radioactiveWall /*TODO: подумать*/, radioactiveWallLarge,
+            bismuthWall, bismuthWallLarge, darkScrapWall, darkScrapWallLarge, pressurizedWall, pressurizedWallLarge, powersteelWall /*TODO: литий + электросталь*/, powersteelWallLarge, radioactiveWall /*TODO: подумать*/, radioactiveWallLarge,
             zincCasing, zincCasingLarge, chromiumCasing, chromiumCasingLarge, reflectiveCasing, reflectiveCasingLarge,
 
             // defense utils (regen and etc)
@@ -127,7 +127,7 @@ public class EctoBlocks {
 
             // turrets
             sentinel,
-            // TODO: "Рассечение"
+            brazier,// TODO: "Жаровня"
 
             // unit factories
             mechAssemblyUnit, spiderAssemblyUnit, airAssemblyUnit, navalAssemblyUnit,
@@ -232,8 +232,6 @@ public class EctoBlocks {
             cacheLayer = CacheLayer.water;
             albedo = 0.9f;
             supportsOverlay = true;
-
-            blendGroup = ectorumSand;
         }};
 
         deepBoricWater = new Floor("deep-boric-water") {{
@@ -251,8 +249,6 @@ public class EctoBlocks {
             cacheLayer = CacheLayer.water;
             albedo = 0.9f;
             supportsOverlay = true;
-
-            blendGroup = ectorumSand;
         }};
 
         sulfurFloor = new Floor("sulfur-floor", 6) {{
@@ -451,6 +447,14 @@ public class EctoBlocks {
             attributes.set(Attribute.sand, 0.65f);
         }};
 
+        mossyCliveliteWall = new StaticWall("mossy-clivelite-wall") {{
+            variants = 3;
+        }};
+
+        bluishMossWall = new  StaticWall("bluish-moss-wall") {{
+            variants = 3;
+        }};
+
         ectorumSandstoneWall = new StaticWall("ectorum-sandstone-wall") {{
             variants = 3;
 
@@ -529,6 +533,7 @@ public class EctoBlocks {
         bluishMossBush = new Prop("bluish-moss-bush") {{
             variants = 3;
 
+            bluishMoss.asFloor().decoration = this;
             breakSound = Sounds.plantBreak;
             //obstructsLight = false;
         }};
@@ -562,12 +567,7 @@ public class EctoBlocks {
             variants = 0;
             clipSize = 128f;
 
-        }
-            @Override
-            public TextureRegion[] makeIconRegions() {
-                return new TextureRegion[]{Core.atlas.find(name + "-icon", super.makeIconRegions()[0])};
-            }
-        };
+        }};
 
         kyanicCluster = new TallBlock("kyanic-cluster") {{
             variants = 3;
@@ -691,18 +691,38 @@ public class EctoBlocks {
 
         int wallHealthMultiplier = 4;
 
-        bismuthWall = new Wall("bismuth-wall"){{
+        bismuthWall = new Wall("bismuth-wall") {{
             requirements(Category.defense, with(EctoItems.bismuth, 6));
             health = 115 * wallHealthMultiplier;
             armor = 3f;
             buildCostMultiplier = 12f;
         }};
 
-        bismuthWallLarge = new Wall("bismuth-wall-large"){{
+        bismuthWallLarge = new Wall("bismuth-wall-large") {{
             requirements(Category.defense, ItemStack.mult(bismuthWall.requirements, 4));
             health = bismuthWall.health * 4;
             armor = bismuthWall.armor;
             buildCostMultiplier = 10f;
+            size = 2;
+        }};
+
+        darkScrapWall = new Wall("dark-scrap-wall") {{
+            requirements(Category.defense, with(EctoItems.bismuth, 2, Items.scrap, 6));
+            health = 90 * wallHealthMultiplier;
+            variants = 4;
+
+            armor = 2f;
+            buildCostMultiplier = 8f;
+            size = 1;
+        }};
+
+        darkScrapWallLarge = new Wall("dark-scrap-wall-large") {{
+            requirements(Category.defense, ItemStack.mult(darkScrapWall.requirements, 4));
+            health = darkScrapWall.health * 4;
+            variants = 4;
+
+            armor = darkScrapWall.armor;
+            buildCostMultiplier = 6f;
             size = 2;
         }};
 
@@ -743,7 +763,7 @@ public class EctoBlocks {
 
             boostedRadiusScl = 1.3f;
 
-            researchCostMultiplier = 1.8f;
+            researchCostMultiplier = 0.05f;
 
             consumePower(0.6f);
             consumeItem(Items.silicon).boost();
@@ -790,8 +810,8 @@ public class EctoBlocks {
         }};
 
         pneumaticDuctRouter = new PneumaticDuctRouter("pneumatic-duct-router") {{
-            requirements(Category.distribution, with(EctoItems.bismuth, 3));
-            health = 55;
+            requirements(Category.distribution, with(EctoItems.bismuth, 4));
+            health = 60;
             speed = 3f;
             researchCost = with(EctoItems.bismuth, 30);
 
@@ -809,11 +829,11 @@ public class EctoBlocks {
         }};
 
         pneumaticDuctBridge = new PneumaticDuctBridge("pneumatic-duct-bridge") {{
-            requirements(Category.distribution, with(EctoItems.bismuth, 7));
-            health = 180;
+            requirements(Category.distribution, with(EctoItems.bismuth, 8, Items.graphite, 2));
+            health = 60;
             speed = 3f;
             buildCostMultiplier = 2f;
-            researchCost = with(EctoItems.bismuth, 30);
+            researchCost = with(EctoItems.bismuth, 50, Items.graphite, 25);
 
             operatingPressure = 1f;
             thresholdPressure = 2.8f;
@@ -829,10 +849,10 @@ public class EctoBlocks {
         }};
 
         pneumaticOverflowDuct = new PneumaticOverflowDuct("pneumatic-overflow-duct") {{
-            requirements(Category.distribution, with(EctoItems.bismuth, 3));
-            health = 180;
+            requirements(Category.distribution, with(EctoItems.bismuth, 2, Items.graphite, 1));
+            health = 60;
             speed = 3f;
-            researchCost = with(EctoItems.bismuth, 30);
+            researchCost = with(EctoItems.bismuth, 100, Items.graphite, 80);
 
             operatingPressure = 1f;
             thresholdPressure = 2.8f;
@@ -848,11 +868,11 @@ public class EctoBlocks {
         }};
 
         pneumaticUnderflowDuct = new PneumaticOverflowDuct("pneumatic-underflow-duct") {{
-            requirements(Category.distribution, with(EctoItems.bismuth, 3));
-            health = 180;
+            requirements(Category.distribution, ItemStack.copy(pneumaticOverflowDuct.requirements));
+            health = 60;
             speed = 3f;
             invert = true;
-            researchCost = with(EctoItems.bismuth, 30);
+            researchCost = ItemStack.copy(pneumaticOverflowDuct.researchCost);
 
             operatingPressure = 1f;
             thresholdPressure = 2.8f;
@@ -872,6 +892,8 @@ public class EctoBlocks {
             size = 3;
             attribute = EctoAttributes.geyser;
             powerProduction = 100f / 60f;
+
+            researchCost = with(EctoItems.bismuth, 40, Items.graphite, 25);
 
             productionChangeSpeed = 0.007f;
 
@@ -899,7 +921,7 @@ public class EctoBlocks {
             health = 90;
             range = 8;
             fogRadius = 1;
-            researchCostMultiplier = 2f;
+            researchCost = with(EctoItems.bismuth, 10, Items.graphite, 5);
             crushFragile = true;
         }};
 
@@ -907,6 +929,7 @@ public class EctoBlocks {
             requirements(Category.power, with(EctoItems.zinc, 15, Items.graphite, 10));
             health = 90;
             consumePowerBuffered(800f);
+            researchCostMultiplier = 0.25f;
 
             baseExplosiveness = 1f;
             breakSound = Sounds.blockExplodeElectric;
@@ -924,9 +947,9 @@ public class EctoBlocks {
 
         impulseBore = new BurstBeamDrill("impulse-bore") {{
             requirements(Category.production, with(EctoItems.bismuth, 25, Items.graphite, 10));
-            consumePower(15 / 60f);
+            consumePower(30 / 60f);
 
-            drillTime = 8f * 60f;
+            drillTime = 10f * 60f;
             optionalBoostIntensity = 1.3f;
 
             tier = 3;
@@ -936,7 +959,7 @@ public class EctoBlocks {
             itemCapacity = 40;
             blockedItem = EctoItems.lithium;
 
-            burstMultiplier = 8;
+            burstMultiplier = 5;
 
             researchCost = with(EctoItems.bismuth, 25);
 
@@ -945,7 +968,7 @@ public class EctoBlocks {
 
         cliffShredder = new MultipleWallCrafter("cliff-shredder") {{
             requirements(Category.production, with(EctoItems.bismuth, 20, EctoItems.zinc, 8));
-            consumePower(25 / 60f);
+            consumePower(30 / 60f);
 
             drillTime = 120f;
             size = 2;
@@ -1000,7 +1023,7 @@ public class EctoBlocks {
         }};
 
         sentinel = new AmmoTargetItemTurret("sentinel") {{
-            requirements(Category.turret, with(EctoItems.bismuth, 80, Items.graphite, 70));
+            requirements(Category.turret, with(EctoItems.bismuth, 120, Items.graphite, 100));
             Effect sfe = EctoFx.shootTurretBigColor;
 
             ammo(
@@ -1108,15 +1131,61 @@ public class EctoBlocks {
             shootCone = 3f;
             scaledHealth = 180;
             rotateSpeed = 1.5f;
-            researchCostMultiplier = 1f;
-
-            buildTime = 60f * 6f;
+            researchCost = with(EctoItems.bismuth, 450, Items.graphite, 300);
 
             coolantMultiplier = 2f;
             coolant = consume(new ConsumeLiquid(Liquids.water, 15f / 60f));
             limitRange(12f);
         }};
 
+        brazier = new ItemTurret("brazier") {{
+            requirements(Category.turret, with(EctoItems.bismuth, 300, Items.silicon, 150, Items.graphite, 80));
+
+            ammo(
+                    EctoItems.zinc, new BasicBulletType(8.5f, 65) {{
+                        width = height = 16;
+                        shrinkY = 0.3f;
+                        velocityRnd = 0.11f;
+                        collidesGround = false;
+                        collidesTiles = false;
+                        shootEffect = Fx.shootBig2;
+                        smokeEffect = Fx.shootSmokeDisperse;
+                        frontColor = Color.white;
+                        backColor = trailColor = hitColor = Color.sky;
+                        trailChance = 0.44f;
+                        ammoMultiplier = 3f;
+
+                        lifetime = 34f;
+                        rotationOffset = 90f;
+                        trailRotation = true;
+                        trailEffect = Fx.disperseTrail;
+
+                        hitEffect = despawnEffect = Fx.hitBulletColor;
+                    }}
+            );
+
+            drawer = new DrawTurret("ectorum-") {{
+                parts.add(new RegionPart("-flap") {{
+                    progress = PartProgress.warmup.curve(Interp.pow2);
+                    moveY = -3.2f;
+                    under = true;
+                    recoilTime = 40f;
+                    heatColor = new Color(Pal.turretHeat).a(0.6f);
+                }},
+                new RegionPart("-blade") {{
+                    heatProgress = PartProgress.warmup;
+                    heatColor = Color.sky.cpy().a(0.9f);
+
+                    mirror = true;
+                    under = true;
+                    moveY = 1f;
+                    moveX = 1.5f;
+                    moveRot = 8;
+                }});
+            }};
+
+            size = 3;
+        }};
 
         mechAssemblyUnit = new UnitFactory("mech-assembly-unit") {{
             requirements(Category.units, with(EctoItems.bismuth, 160, Items.silicon, 180));
@@ -1135,7 +1204,7 @@ public class EctoBlocks {
 
             size = 3;
             configurable = false;
-            plans.add(new UnitPlan(EctoUnitTypes.echo, 25f * 60f, with(EctoItems.bismuth, 30, Items.silicon, 65, EctoItems.zinc, 45)));
+            plans.add(new UnitPlan(EctoUnitTypes.echo, 35f * 60f, with(EctoItems.bismuth, 30, Items.silicon, 65, EctoItems.zinc, 45)));
             regionSuffix = "-awake";
             fogRadius = size;
             researchCostMultiplier = 1.2f;
@@ -1147,7 +1216,7 @@ public class EctoBlocks {
 
             size = 3;
             configurable = false;
-            plans.add(new UnitPlan(EctoUnitTypes.echo, 40f * 60f, with(EctoItems.bismuth, 20, Items.silicon, 65, Items.graphite, 70)));
+            plans.add(new UnitPlan(EctoUnitTypes.spasm, 40f * 60f, with(EctoItems.bismuth, 20, Items.silicon, 65, Items.graphite, 70)));
             regionSuffix = "-awake";
             fogRadius = size;
             researchCostMultiplier = 1.4f;

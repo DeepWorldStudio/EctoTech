@@ -42,7 +42,7 @@ public class EctorumTechTree {
             node(geyserTurbine, ectorumSector, () -> {
                 node(powerTransmitter, Seq.with(new Research(impulseBore)), () -> {
                     node(zincBattery, () -> {
-                        node(zincBattery, () -> {
+                        node(zincBatteryLarge, Seq.with(new SectorComplete(wasteland), new Research(highPressureSiliconSmelter)), () -> {
 
                         });
                     });
@@ -62,11 +62,28 @@ public class EctorumTechTree {
             //Turrets and walls tree
             node(radarDevice, Seq.with(new Research(powerTransmitter)), () -> {
                 node(sentinel, ()  -> {
-                    node(bismuthWall, () -> {
-                        node(bismuthWallLarge, () -> {
+                    node(brazier, Seq.with(new OnSector(foothills)), () -> {
+
+                    });
+                });
+
+                node(bismuthWall, Seq.with (new Research(sentinel)), () -> {
+                    node(bismuthWallLarge, () -> {
+
+                    });
+
+                    node(zincCasing, Seq.with(new OnSector(wasteland)), () -> {
+                        node(zincCasingLarge, () -> {
 
                         });
                     });
+
+                    node(darkScrapWall, Seq.with(new OnSector(wasteland)), () -> {
+                        node(darkScrapWallLarge, () -> {
+
+                        });
+                    });
+
                 });
             });
 
