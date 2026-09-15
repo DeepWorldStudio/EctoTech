@@ -1,4 +1,4 @@
-package ectotech.world.meta;
+package ectotech.world.blocks.meta;
 
 import arc.Core;
 import arc.graphics.g2d.TextureRegion;
@@ -20,7 +20,7 @@ import mindustry.world.meta.StatValues;
 
 import static mindustry.Vars.tilesize;
 
-/**Вспомогательный класс для отображения кастомных статов*/
+//Вспомогательный класс для изображение статов боеприпасов
 public class EctoStatValues extends StatValues {
 
 
@@ -119,11 +119,11 @@ public class EctoStatValues extends StatValues {
                     }
 
                     if (type.collidesAir) {
-                        sep(bt, Core.bundle.get("bullet.reachair"));
+                        sep(bt, Core.bundle.get("bullet.reachAir"));
                     }
 
                     if (type.collidesGround) {
-                        sep(bt, Core.bundle.get("bullet.reachground"));
+                        sep(bt, Core.bundle.get("bullet.reachGround"));
                     }
 
                     if (type.suppressionRange > 0) {

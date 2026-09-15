@@ -2,18 +2,19 @@ package ectotech.content;
 
 import arc.Core;
 import arc.graphics.Color;
-import arc.struct.Seq;
-import ectotech.EctoTech;
+import ectotech.EctoVars;
 import ectotech.game.EctoCampaignRules;
+import ectotech.game.EctoRules;
 import mindustry.content.Planets;
-import mindustry.content.Weathers;
+import mindustry.game.Rules;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
 import mindustry.maps.planet.SerpuloPlanetGenerator;
 import mindustry.type.Planet;
-import mindustry.type.Weather;
 import mindustry.world.meta.Env;
+
+import ectotech.EctoTech;
 
 public class EctoPlanets {
 
@@ -92,20 +93,11 @@ public class EctoPlanets {
 
                 defaultEnv = Env.terrestrial | Env.oxygen | Env.groundWater;
 
-                ruleSetter = r -> {
+                ruleSetter = (Rules r) -> {
                     if (EctoTech.ectorumTeam != null) r.waveTeam = EctoTech.ectorumTeam;
 
                     r.placeRangeCheck = false;
                     r.coreDestroyClear = true;
-                    r.allowCoreUnloaders = false;
-                    r.onlyDepositCore = true;
-                    r.hideSpawns = false;
-
-                    if (r.sector != null && r.sector.preset == EctoSectorPresets.theHollow) {
-                        r.weather = Seq.with(new Weather.WeatherEntry(Weathers.fog));
-
-                        EctoSectorPresets.applyWeather(r, Weathers.fog);
-                    }
                 };
             }
 

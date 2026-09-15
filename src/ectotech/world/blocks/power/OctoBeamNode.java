@@ -25,7 +25,6 @@ import mindustry.world.Tile;
 import mindustry.world.blocks.power.BeamNode;
 import mindustry.world.blocks.power.PowerGraph;
 import mindustry.world.blocks.power.PowerNode;
-import mindustry.world.meta.Stat;
 
 import java.util.Arrays;
 
@@ -58,16 +57,15 @@ public class OctoBeamNode extends BeamNode {
     }
 
     @Override
-    public void load() {
-        super.load();
-        powerBeamSphere = Core.atlas.find(name + "-beam-sphere", "power-beam-sphere");
+    public void setBars(){
+        super.setBars();
+        removeBar("batteries");
     }
 
     @Override
-    public void setStats() {
-        super.setStats();
-        
-        stats.remove(Stat.powerCapacity);
+    public void load() {
+        super.load();
+        powerBeamSphere = Core.atlas.find(name + "-beam-sphere", "power-beam-sphere");
     }
 
     @Override

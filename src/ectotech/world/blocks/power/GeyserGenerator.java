@@ -9,7 +9,6 @@ import ectotech.world.blocks.environment.SteamGeyser;
 import mindustry.game.Team;
 import mindustry.world.Tile;
 import mindustry.world.blocks.power.ThermalGenerator;
-import mindustry.world.meta.Stat;
 
 public class GeyserGenerator extends ThermalGenerator {
     public float productionChangeSpeed = 0.02f;
@@ -28,14 +27,6 @@ public class GeyserGenerator extends ThermalGenerator {
     }
 
     @Override
-    public void setStats() {
-        super.setStats();
-
-        stats.remove(Stat.tiles);
-        stats.add(Stat.tiles, attribute, 1f);
-    };
-
-    @Override
     public boolean canPlaceOn(Tile tile, Team team, int rotation) {
         return tile.floor() instanceof SteamGeyser geyser && geyser.isCenterVent(tile);
     }
@@ -48,7 +39,7 @@ public class GeyserGenerator extends ThermalGenerator {
         @Override
         public void updateTile() {
             float targetEfficiency  = getPhaseEfficiency();
-            productionEfficiency = Mathf.approachDelta(productionEfficiency, targetEfficiency, productionChangeSpeed);
+            productionEfficiency = Mathf.approachDelta(productionEfficiency, targetEfficiency , productionChangeSpeed);
 
             super.updateTile();
 

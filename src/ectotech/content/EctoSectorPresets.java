@@ -1,10 +1,6 @@
 package ectotech.content;
 
-import mindustry.content.Weathers;
-import mindustry.game.Rules;
 import mindustry.type.SectorPreset;
-import mindustry.type.Weather;
-import mindustry.type.Weather.WeatherEntry;
 
 import static ectotech.content.EctoPlanets.ectorum;
 
@@ -24,16 +20,9 @@ public class EctoSectorPresets {
         theHollow = new SectorPreset("the-hollow", ectorum, 15) {{
             alwaysUnlocked = true;
             addStartingItems = true;
-            captureWave = 12;
+            captureWave = 15;
             difficulty = 1;
             overrideLaunchDefaults = true;
-
-            rules = r -> {
-                r.winWave = this.captureWave;
-                r.hideSpawns = false;
-
-                EctoSectorPresets.applyWeather(r, Weathers.fog);
-            };
         }};
 
         // 2. Пустошь (Wasteland)
@@ -91,18 +80,5 @@ public class EctoSectorPresets {
             difficulty = 8;
             isLastSector = true;
         }};
-    }
-
-    public static void applyWeather(Rules rules, Weather w) {
-        WeatherEntry weather = rules.weather.find(entry -> entry.weather == w);
-
-        if (weather == null) {
-            rules.weather.clear();
-            weather = new WeatherEntry(w);
-            rules.weather.add(weather);
-        }
-
-        weather.always = true;
-        weather.intensity = 3f;
     }
 }

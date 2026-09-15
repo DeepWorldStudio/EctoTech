@@ -1,0 +1,11 @@
+package ectotech.utilities;
+
+import arc.math.geom.Vec2;
+
+public class EctoMathf {
+    private static final Vec2 outputVec = new Vec2();
+    //Pseudo3d functions
+    public static Vec2 toIsometric(float height, float x, float y){
+        return  outputVec.set(x, y + height);
+    }
+}

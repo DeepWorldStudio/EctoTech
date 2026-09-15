@@ -369,16 +369,16 @@ public class EctoUnitTypes {
             buildSpeed = 0.8f;
 
             mineTier = 1;
-            mineSpeed = 5f;
+            mineSpeed = 4f;
             mineWalls = true;
             mineFloor = false;
-            buildBeamOffset = 4.3f;
-            mineBeamOffset = 4.3f;
-
             targetable = true;
             hittable = true;
 
             engineOffset = 7f;
+
+            buildBeamOffset = 2f;
+            mineBeamOffset = 2f;
 
             alwaysCreateOutline = true;
 
