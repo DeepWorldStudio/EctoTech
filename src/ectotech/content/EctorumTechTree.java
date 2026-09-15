@@ -107,7 +107,7 @@ public class EctorumTechTree {
                 });
 
                 node(airAssemblyUnit, Seq.with(new OnSector(metalRidge)), () -> {
-                    node(EctoUnitTypes.spasm);
+                    node(EctoUnitTypes.discharge);
                 });
             });
 

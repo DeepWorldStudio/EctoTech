@@ -3,8 +3,6 @@ package ectotech.content;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
-import arc.math.geom.*;
-import arc.struct.*;
 
 import ectotech.ai.types.RotateMoveCommandAI;
 import ectotech.entities.abilities.BuildRepairFieldAbility;
@@ -17,11 +15,8 @@ import ectotech.type.weapons.CoreProximityWeapon;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
-import mindustry.entities.*;
-import mindustry.entities.abilities.*;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.*;
-import mindustry.entities.part.*;
 import mindustry.entities.pattern.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
@@ -34,13 +29,13 @@ public class EctoUnitTypes {
     public static UnitType
 
             // mech
-            fist,
+            fist, sickle, hammer,
 
             // legs
             echo,
 
             // air
-            spasm,
+            discharge, crisis,
 
             // air, core
             glare;
@@ -54,31 +49,106 @@ public class EctoUnitTypes {
 
             speed = 0.5f;
             hitSize = 9f;
-            health = 450;
+            health = 550;
             stepSoundVolume = 0.4f;
 
             alwaysCreateOutline = false;
 
-            weapons.add(new Weapon("ectotech-fist-weapon"){{
+            weapons.add(new Weapon("ectotech-fist-weapon") {{
                 reload = 0.4f * 60f;
                 x = 4.25f;
                 y = -1.25f;
                 layerOffset = -0.001f;
 
                 shootX = 1.1f;
-                shootY = 6f;
+                shootY = 4.4f;
 
                 top = false;
 
                 ejectEffect = Fx.casing1;
 
-                bullet = new BasicBulletType(2.5f, 30){{
-                    width = 8f;
-                    height = 10f;
+                bullet = new BasicBulletType(4f, 30) {{
+                    width = 5f;
+                    height = 12f;
 
-                    lifetime = 60f;
+                    trailLength = 4;
+                    trailWidth = 1f;
+
+                    shootEffect = Fx.shootSmall;
+                    despawnEffect = Fx.hitBulletColor;
+
+                    backColor = trailColor = Color.valueOf("ca5e65");
+                    engineColor = Pal.bulletYellow.cpy().mul(Color.white);
+                    frontColor = Color.valueOf("e28d87");
+                    lightColor = Pal.powerLight;
+
+                    lifetime = 33f;
                 }};
             }});
+
+            outlineColor = EctoPal.ectorumMechOutline;
+        }};
+
+        sickle = new EctorumUnitType("sickle") {{
+            constructor = MechUnit::create;
+
+            researchCostMultiplier = 0.3f;
+
+            speed = 0.35f;
+            hitSize = 11f;
+            health = 1500;
+            stepSoundVolume = 0.4f;
+
+            alwaysCreateOutline = false;
+
+            weapons.add(new Weapon("ectotech-thread-weapon") {{
+                reload = 60f;
+                recoil = 2f;
+                shootSound = Sounds.shootScepter;
+                x = 5.5f;
+                layerOffset = -0.001f;
+
+                shootX = 0.4f;
+                shootY = 5f;
+
+                top = false;
+
+                ejectEffect = Fx.casing2;
+
+                shoot = new ShootSpread();
+
+                bullet = new BasicBulletType(8f, 70) {{
+                    height = 9f;
+                    width = 7f;
+
+                    trailLength = 6;
+                    trailWidth = 1f;
+
+                    shrinkY = 0f;
+                    spin = 480f / 60f;
+                    sprite = "mine-bullet";
+
+                    shootEffect = Fx.shootSmall;
+                    despawnEffect = Fx.hitBulletColor;
+                    hitEffect = Fx.hitFuse;
+                    pierce = true;
+                    pierceCap = 3;
+                    pierceBuilding = false;
+
+                    backColor = trailColor = Color.valueOf("ca5e65");
+                    engineColor = Pal.bulletYellow.cpy().mul(Color.white);
+                    frontColor = Color.valueOf("e28d87");
+                    lightColor = Pal.powerLight;
+
+                    hitShake = 2f;
+                    knockback = 1.5f;
+
+                    lifetime = 18f;
+                }};
+            }});
+
+
+            outlineColor = EctoPal.ectorumMechOutline;
         }};
 
         echo = new EctorumUnitType("echo") {{
@@ -88,7 +158,7 @@ public class EctoUnitTypes {
             drag = 0.4f;
             hitSize = 10f;
             rotateSpeed = 2.6f;
-            health = 320;
+            health = 350;
 
             stepSound = Sounds.walkerStepSmall;
             stepSoundPitch = 1f;
@@ -108,7 +178,9 @@ public class EctoUnitTypes {
             weapons.add(new Weapon() {{
                 x = 0f;
                 y = 3f;
-                shootY = -3.2f;
+
+                shootX = 1.1f;
+                shootY = 3.1f;
 
                 mirror = false;
                 rotate = false;
@@ -157,11 +229,11 @@ public class EctoUnitTypes {
                 includeSelf = false;
                 effectColor = Color.valueOf("4D3873").lerp(Color.white, 0.2f);
             }});
+
+            outlineColor = EctoPal.ectorumSpiderOutline;
         }};
 
-        spasm = new AlternateEnginedUnitType("spasm") {{
-
-
+        discharge = new AlternateEnginedUnitType("discharge") {{
             researchCostMultiplier = 0.5f;
             speed = 2.7f;
             accel = 0.08f;
@@ -202,7 +274,7 @@ public class EctoUnitTypes {
                 x = 0f;
                 shootY = 2.5f;
 
-                shootCone = 22f;
+                shootCone = 45f;
                 reload = 40f;
                 shoot.shots = 3;
                 shoot.shotDelay = 5f;
@@ -229,6 +301,42 @@ public class EctoUnitTypes {
                     pierceCap = 4;
                 }};
             }});
+
+            outlineColor = EctoPal.ectorumAirOutline;
+        }};
+
+        crisis = new AlternateEnginedUnitType("crisis") {{
+            researchCostMultiplier = 0.5f;
+            speed = 2f;
+            rotateSpeed = 4.5f;
+
+            accel = 0.06f;
+            drag = 0.07f;
+            flying = true;
+            health = 1150;
+            armor = 3f;
+
+            circleTarget = true;
+            omniMovement = false;
+            circleTargetRadius = 40f;
+
+            autoDropBombs = true;
+            targetAir = false;
+            range = 140f;
+
+            itemCapacity = 0;
+            targetFlags = new BlockFlag[]{BlockFlag.factory, null};
+
+            moveSound = Sounds.loopThruster;
+            moveSoundPitchMin = 0.6f;
+            moveSoundVolume = 0.4f;
+
+            weapons.add(new Weapon() {{
+                minShootVelocity = 1f;
+            }});
+
+
+            outlineColor = EctoPal.ectorumAirOutline;
         }};
 
         float coreFleeRange = 400f;
@@ -276,11 +384,14 @@ public class EctoUnitTypes {
 
             weapons.add(new CoreProximityWeapon("ectotech-glare-weapon") {{
                 top = false;
-                reload = 15f;
+                reload = 45f;
                 layerOffset = -0.001f;
 
                 x = 4f;
                 y = 2.8f;
+
+                shootX = -1f;
+                shootY = 2.75f;
 
                 inactiveWeaponOffset = 0.6f;
                 inactiveColor = Color.valueOf("78726F");
@@ -290,16 +401,16 @@ public class EctoUnitTypes {
                 mirror = true;
                 invert = false;
 
-                shoot = new ShootSpread(){{
-                    shots = 2;
-                    shotDelay = 3f;
+                shoot = new ShootSpread() {{
+                    shots = 3;
+                    shotDelay = 5f;
                     spread = 2f;
                 }};
 
                 inaccuracy = 3f;
                 shootSound = Sounds.shootAlpha;
 
-                bullet = new BasicBulletType(3.5f, 28) {{
+                bullet = new BasicBulletType(3.5f, 20) {{
                     scaleKeepVelocity = true;
                     width = 1.5f;
                     height = 5f;
@@ -327,6 +438,8 @@ public class EctoUnitTypes {
 
                 squareRad = 4.3f;
             }});
+
+            outlineColor = EctoPal.ectorumCoreUnitOutline;
         }
             @Override
             public void drawOutline(Unit unit) {

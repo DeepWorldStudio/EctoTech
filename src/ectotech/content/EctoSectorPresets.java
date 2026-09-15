@@ -16,13 +16,8 @@ public class EctoSectorPresets {
     wasteland, foothills, ancientCanyon, ruins,
 
     // first fork
-    elderPlateau, metalRidge,
-    driedRiver, sulfuricSwamp,
-
-    // first fork concatenation
-    recyclingFacility;
-
-
+    elderPlateau, metalRidge, cheerlessValley, //Угрюмая/Мрачная долина, sinisterCity,
+    driedRiver, sulfuricSwamp, recyclingFacility;
 
     public static void load() {
         // 1. Полость (The Hollow) - стартовый сектор

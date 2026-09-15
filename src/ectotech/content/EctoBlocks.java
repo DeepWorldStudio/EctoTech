@@ -11,10 +11,7 @@ import ectotech.world.blocks.distribution.PneumaticDuct;
 import ectotech.world.blocks.distribution.PneumaticDuctBridge;
 import ectotech.world.blocks.distribution.PneumaticDuctRouter;
 import ectotech.world.blocks.distribution.PneumaticOverflowDuct;
-import ectotech.world.blocks.environment.EctorumQuicksand;
-import ectotech.world.blocks.environment.ParticledFloor;
-import ectotech.world.blocks.environment.ParticledShallowLiquid;
-import ectotech.world.blocks.environment.SteamGeyser;
+import ectotech.world.blocks.environment.*;
 import ectotech.world.blocks.power.GeyserGenerator;
 import ectotech.world.blocks.power.OctoBeamNode;
 import ectotech.world.blocks.production.BurstBeamDrill;
@@ -55,7 +52,9 @@ public class EctoBlocks {
     public static Block
 
             // natural environment
-            malachite, charoit, ebonite,
+            malachite,
+            charoit, smoothCharoit, charoitCrater, charoitCraterBig,
+            ebonite, smoothEbonite,
             smoothClivelite, clivelite, crushedClivelite,
             bluishMoss,
             ectorumSand, ectorumQuicksand, ectorumSandstone, boricSandWater,
@@ -79,7 +78,7 @@ public class EctoBlocks {
             polishedMarbleWall,
 
             // boulders and custom env decorations
-            charoitBoulder, cliveliteBoulder, mossyCliveliteBoulder, ectorumSandBoulder,
+            charoitBoulder, eboniteBoulder, cliveliteBoulder, mossyCliveliteBoulder, ectorumSandBoulder,
             bluishMossShoots, bluishMossBush, bluishMossTree,
             sulfurLayering, largeSulfurLayering, pyriteCluster,
             giantThoriumCrystal,
@@ -150,11 +149,35 @@ public class EctoBlocks {
         }};
 
         charoit = new Floor("charoit") {{
-            variants = 4;
+            variants = 7;
+        }};
+
+        smoothCharoit = new Floor("smooth-charoit") {{
+            variants = 3;
+
+            blendGroup = charoit;
+        }};
+
+        charoitCrater = new Floor("charoit-crater") {{
+            variants = 3;
+
+            blendGroup = charoit;
+        }};
+
+        charoitCraterBig = new LargeCrater("charoit-crater-big") {{
+            variants = 3;
+
+            parent = blendGroup = charoit;
         }};
 
         ebonite = new Floor("ebonite") {{
+            variants = 6;
+        }};
+
+        smoothEbonite = new Floor("smooth-ebonite") {{
             variants = 4;
+
+            blendGroup = ebonite;
         }};
 
         smoothClivelite = new Floor("smooth-clivelite") {{
@@ -508,6 +531,12 @@ public class EctoBlocks {
             charoit.asFloor().decoration = this;
         }};
 
+        eboniteBoulder = new StaticProp("ebonite-boulder") {{
+            variants = 3;
+
+            ebonite.asFloor().decoration = this;
+        }};
+
         cliveliteBoulder = new StaticProp("clivelite-boulder") {{
             variants = 3;
 
@@ -566,7 +595,6 @@ public class EctoBlocks {
         giantThoriumCrystal = new TallBlock("thorium-crystal-giant") {{
             variants = 0;
             clipSize = 128f;
-
         }};
 
         kyanicCluster = new TallBlock("kyanic-cluster") {{
@@ -1027,7 +1055,7 @@ public class EctoBlocks {
             Effect sfe = EctoFx.shootTurretBigColor;
 
             ammo(
-                    EctoItems.bismuth, new BasicBulletType(16, 25) {{
+                    EctoItems.bismuth, new BasicBulletType(16, 35) {{
                         width = 14f;
                         height = 15f;
                         lifetime = 10;
@@ -1117,10 +1145,11 @@ public class EctoBlocks {
                     heatColor = new Color(Pal.turretHeat).a(0.6f);
                 }});
             }};
+
             cooldownTime = 35;
 
             shootY = 7f;
-            outlineColor = Pal.darkOutline;
+            outlineColor = Color.valueOf("1a2317");
 
             size = 2;
             itemCapacity = 15;
@@ -1185,6 +1214,7 @@ public class EctoBlocks {
             }};
 
             size = 3;
+            outlineColor = Color.valueOf("2f2b2d");
         }};
 
         mechAssemblyUnit = new UnitFactory("mech-assembly-unit") {{
@@ -1216,7 +1246,7 @@ public class EctoBlocks {
 
             size = 3;
             configurable = false;
-            plans.add(new UnitPlan(EctoUnitTypes.spasm, 40f * 60f, with(EctoItems.bismuth, 20, Items.silicon, 65, Items.graphite, 70)));
+            plans.add(new UnitPlan(EctoUnitTypes.discharge, 40f * 60f, with(EctoItems.bismuth, 20, Items.silicon, 65, Items.graphite, 70)));
             regionSuffix = "-awake";
             fogRadius = size;
             researchCostMultiplier = 1.4f;
