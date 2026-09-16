@@ -741,7 +741,7 @@ public class EctoBlocks {
             health = 90 * wallHealthMultiplier;
             variants = 4;
 
-            armor = 2f;
+            armor = 1f;
             buildCostMultiplier = 8f;
             size = 1;
         }};
