@@ -474,8 +474,10 @@ public class EctoBlocks {
             variants = 3;
         }};
 
-        bluishMossWall = new  StaticWall("bluish-moss-wall") {{
+        bluishMossWall = new StaticWall("bluish-moss-wall") {{
             variants = 3;
+
+            bluishMoss.asFloor().wall = this;
         }};
 
         ectorumSandstoneWall = new StaticWall("ectorum-sandstone-wall") {{
@@ -1085,7 +1087,7 @@ public class EctoBlocks {
                         knockback = 0.6f;
                     }},
 
-                    Items.graphite, new BasicBulletType(16.6666666f, 45) {{
+                    Items.graphite, new BasicBulletType(16.6666666f, 55) {{
                         width = 16f;
                         height = 17f;
                         lifetime = 12;

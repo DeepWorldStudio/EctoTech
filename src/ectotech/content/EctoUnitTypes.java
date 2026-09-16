@@ -1,9 +1,9 @@
 package ectotech.content;
 
-import arc.graphics.*;
-import arc.graphics.g2d.*;
-import arc.math.*;
-
+import arc.audio.Sound;
+import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
+import arc.math.Interp;
 import ectotech.ai.types.RotateMoveCommandAI;
 import ectotech.entities.abilities.BuildRepairFieldAbility;
 import ectotech.entities.abilities.HitStatusFieldAbility;
@@ -15,14 +15,18 @@ import ectotech.type.weapons.CoreProximityWeapon;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
-import mindustry.entities.bullet.*;
-import mindustry.entities.effect.*;
-import mindustry.entities.pattern.*;
+import mindustry.entities.Effect;
+import mindustry.entities.bullet.ArtilleryBulletType;
+import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.bullet.LaserBulletType;
+import mindustry.entities.effect.MultiEffect;
+import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.*;
-import mindustry.graphics.*;
-import mindustry.type.*;
-
-import mindustry.world.meta.*;
+import mindustry.graphics.Layer;
+import mindustry.graphics.Pal;
+import mindustry.type.UnitType;
+import mindustry.type.Weapon;
+import mindustry.world.meta.BlockFlag;
 
 
 public class EctoUnitTypes {
@@ -101,7 +105,7 @@ public class EctoUnitTypes {
 
             alwaysCreateOutline = false;
 
-            weapons.add(new Weapon("ectotech-thread-weapon") {{
+            weapons.add(new Weapon("ectotech-sickle-weapon") {{
                 reload = 60f;
                 recoil = 2f;
                 shootSound = Sounds.shootScepter;
@@ -239,7 +243,7 @@ public class EctoUnitTypes {
             accel = 0.08f;
             drag = 0.04f;
             flying = true;
-            health = 270;
+            health = 400;
 
             engineType = FlameJetEngine::new;
             engineSize = 1.13f;
@@ -306,19 +310,24 @@ public class EctoUnitTypes {
         }};
 
         crisis = new AlternateEnginedUnitType("crisis") {{
+            Effect hfx = Fx.flakExplosion;
+            Effect dfx = Fx.legDestroy;
+            Sound dsd = Sounds.explosion;
+
             researchCostMultiplier = 0.5f;
             speed = 2f;
-            rotateSpeed = 4.5f;
+            rotateSpeed = 2.4f;
+            hitSize = 11f;
 
-            accel = 0.06f;
-            drag = 0.07f;
+            accel = 0.12f;
+            drag = 0.1f;
             flying = true;
             health = 1150;
-            armor = 3f;
+            armor = 2f;
 
             circleTarget = true;
             omniMovement = false;
-            circleTargetRadius = 40f;
+            circleTargetRadius = 70f;
 
             autoDropBombs = true;
             targetAir = false;
@@ -331,10 +340,135 @@ public class EctoUnitTypes {
             moveSoundPitchMin = 0.6f;
             moveSoundVolume = 0.4f;
 
-            weapons.add(new Weapon() {{
-                minShootVelocity = 1f;
-            }});
+            engineOffset = 6.5f;
+            engineSize = 3f;
 
+            weapons.add(new Weapon() {{
+                x = -6f;
+                y = 4f;
+
+                minShootVelocity = 1f;
+
+                mirror = true;
+                rotate = false;
+                reload = 0.2f * 60f;
+
+                baseRotation = 180f;
+                shootCone = 180f;
+                inaccuracy = 4f;
+
+                shootSound = Sounds.shootHorizon;
+                ejectEffect = Fx.none;
+                soundPitchMax = 1.2f;
+
+                bullet = new BasicBulletType(0.3f, 15f, "large-bomb") {{
+                    keepVelocity = false;
+
+                    trailEffect = Fx.artilleryTrail;
+                    trailInterval = 4f;
+                    trailColor = backColor;
+                    shrinkX = 0.15f;
+                    shrinkY = 0.7f;
+                    shrinkInterp = Interp.slope;
+                    hitShake = 1f;
+                    collidesTiles = false;
+                    collides = false;
+                    collidesAir = false;
+                    trailLength = 22;
+                    trailWidth = 1.8f;
+
+                    width = 10f;
+                    height = 14f;
+
+                    fragOnDespawn = true;
+                    fragOnHit = false;
+
+                    fragAngle = 0f;
+                    fragSpread = 0f;
+                    fragRandomSpread = 5f;
+
+                    hitEffect = hfx;
+
+                    despawnEffect = dfx;
+                    despawnSound = dsd;
+
+                    shootEffect = smokeEffect = Fx.none;
+
+                    lifetime = 0.5f * 60f;
+
+                    status = StatusEffects.blasted;
+                    statusDuration = 60f;
+
+                    fragVelocityMin = 0.6f;
+                    fragVelocityMax = 0.8f;
+
+                    splashDamage = 70f;
+                    splashDamageRadius = 2f * 8f;
+
+                    fragBullets = 1;
+                    fragBullet = new ArtilleryBulletType(0.8f, 15f, "large-bomb") {{
+                        scaleKeepVelocity = true;
+
+                        width = 10f;
+                        height = 14f;
+
+                        fragOnDespawn = true;
+                        fragOnHit = false;
+
+                        fragAngle = 0f;
+                        fragSpread = 0f;
+                        fragRandomSpread = 2f;
+
+                        hitEffect = hfx;
+
+                        despawnEffect = dfx;
+                        despawnSound = dsd;
+
+                        lifetime = 0.9f * 60f;
+
+                        status = StatusEffects.blasted;
+                        statusDuration = 60f;
+
+                        fragVelocityMin = 0.6f;
+                        fragVelocityMax = 0.8f;
+
+                        splashDamage = 55f;
+                        splashDamageRadius = 1.1f * 8f;
+
+                        fragBullets = 1;
+                        fragBullet = new ArtilleryBulletType(0.6f, 15f, "large-bomb") {{
+                            scaleKeepVelocity = true;
+                            velocityScaleRandMax = 0.9f;
+                            velocityScaleRandMin = 0.65f;
+
+                            width = 10f;
+                            height = 14f;
+
+                            fragOnDespawn = false;
+                            fragOnHit = false;
+
+                            hitEffect = hfx;
+
+                            fragAngle = 0f;
+                            fragSpread = 0f;
+                            fragRandomSpread = 2f;
+
+                            despawnEffect = dfx;
+                            despawnSound = dsd;
+
+                            lifetime = 0.7f * 60f;
+
+                            status = StatusEffects.blasted;
+                            statusDuration = 60f;
+
+                            splashDamage = 45f;
+                            splashDamagePierce = true;
+                            splashDamageRadius = 3f * 8f;
+                        }};
+                    }};
+                }};
+
+            }});
 
             outlineColor = EctoPal.ectorumAirOutline;
         }};

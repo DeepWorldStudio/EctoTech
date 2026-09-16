@@ -1,5 +1,6 @@
 package ectotech.utilities;
 
+import arc.math.Mathf;
 import arc.math.geom.Vec2;
 
 public class EctoMathf {
@@ -7,5 +8,9 @@ public class EctoMathf {
     //Pseudo3d functions
     public static Vec2 toIsometric(float height, float x, float y){
         return  outputVec.set(x, y + height);
+    }
+
+    public static Vec2 getOffsetVec(float stX, float stY, float offset, float rotation){
+        return outputVec.set(offset * Mathf.cosDeg(rotation) + stX, offset * Mathf.sinDeg(rotation) + stY);
     }
 }
