@@ -41,10 +41,10 @@ public class SteamGeyser extends SteamVent {
 
     public Effect burstEffect = EctoFx.geyserBurst;
 
-    private static final float activeEffectSpacing = 4f;
+    private static final float activeEffectSpacing = 1.5f;
     private static final float passiveEffectSpacing = 25f;
 
-    private static final float passiveVolume = 0.01f;
+    private static final float passiveVolume = 0.03f;
     private static final float activeVolume = 0.04f;
 
     private static final IntSet damagedUnits = new IntSet();
@@ -114,7 +114,7 @@ public class SteamGeyser extends SteamVent {
             if ((state.data += Time.delta) >= spacing) {
                 if (active) {
                     baseEffect.at(center.worldx(), center.worldy(), steamColor);
-                    if (Mathf.chance(0.4f)) {
+                    if (Mathf.chance(0.5f)) {
                         burstEffect.at(center.worldx(), center.worldy(), Color.valueOf("4a9eff"));
                     }
                 } else {

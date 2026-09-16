@@ -2,9 +2,8 @@ package ectotech.content;
 
 import arc.Core;
 import arc.graphics.Color;
-import ectotech.EctoVars;
+import ectotech.EctoTech;
 import ectotech.game.EctoCampaignRules;
-import ectotech.game.EctoRules;
 import mindustry.content.Planets;
 import mindustry.game.Rules;
 import mindustry.graphics.g3d.HexMesh;
@@ -13,8 +12,6 @@ import mindustry.graphics.g3d.MultiMesh;
 import mindustry.maps.planet.SerpuloPlanetGenerator;
 import mindustry.type.Planet;
 import mindustry.world.meta.Env;
-
-import ectotech.EctoTech;
 
 public class EctoPlanets {
 
@@ -86,7 +83,12 @@ public class EctoPlanets {
 
                 allowCampaignRules = true;
 
-                campaignRuleDefaults.fog = true;
+                campaignRuleDefaults = new EctoCampaignRules(){{
+                    fog = true;
+                    clearFogOnCapture = true;
+                }};
+
+                campaignRules = new EctoCampaignRules();
 
                 startSector = 15;
                 defaultCore = EctoBlocks.coreSpark;
@@ -103,9 +105,9 @@ public class EctoPlanets {
 
             @Override
             public void loadRules() {
-                var fallback = campaignRules;
-                campaignRules = Core.settings.getJson(name + "-campaign-rules", EctoCampaignRules.class, () -> fallback instanceof EctoCampaignRules ? (EctoCampaignRules) fallback : new EctoCampaignRules()
-                );
+                EctoCampaignRules current = campaignRules instanceof EctoCampaignRules e ? e : new EctoCampaignRules();
+
+                campaignRules = Core.settings.getJson(name + "-campaign-rules", EctoCampaignRules.class, () -> current);
             }
         };
     }
