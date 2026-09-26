@@ -72,9 +72,14 @@ tasks.register('jarAndroid') {
     doLast {
         if (!sdkRoot || !new File(sdkRoot as String).exists()) throw new GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
 
-        def platformRoot = new File("$sdkRoot/platforms/").listFiles().sort().reverse().find { f -> new File(f, "android.jar").exists() }
+        def platformsDir = new File(sdkRoot as String, "platforms")
+        def platforms = platformsDir.listFiles()
+        if(platforms == null || platforms.length == 0){
+            throw new GradleException("No Android platforms found in ${platformsDir}. Install one via sdkmanager (e.g. 'platforms;android-35').")
+        }
 
-        if (!platformRoot) throw new GradleException("No android.jar found. Ensure that you have an Android platform installed.")
+        def platformRoot = platforms.sort().reverse().find { f -> new File(f, "android.jar").exists() }
+        if(!platformRoot) throw new GradleException("No android.jar found in ${platformsDir}.")
 
         // classpath: зависимости мода/компиляции
         def dependencies = (configurations.compileClasspath.asList() + configurations.runtimeClasspath.asList())
