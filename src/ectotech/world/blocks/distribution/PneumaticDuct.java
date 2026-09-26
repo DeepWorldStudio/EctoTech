@@ -5,9 +5,9 @@ import arc.graphics.g2d.TextureRegion;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.content.EctoBlocks;
-import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressureConsumer;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
-import ectotech.world.pressure.utils.PressureModule;
+import ectotech.world.modules.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.content.Blocks;
 import mindustry.gen.Building;
@@ -65,7 +65,7 @@ public class PneumaticDuct extends Duct {
         return new TextureRegion[] {Core.atlas.find(name + "-bottom", "duct-bottom"), topRegions[0]};
     }
 
-    public class PneumaticDuctBuild extends DuctBuild implements Pressurized, PressurizedNetworkMember {
+    public class PneumaticDuctBuild extends DuctBuild implements PressureConsumer, PressurizedNetworkMember {
 
         @Override
         public Building self() {

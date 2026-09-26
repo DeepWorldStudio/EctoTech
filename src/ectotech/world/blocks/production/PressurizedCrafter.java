@@ -1,7 +1,7 @@
 package ectotech.world.blocks.production;
 
-import ectotech.world.pressure.interfaces.Pressurized;
-import ectotech.world.pressure.utils.PressureModule;
+import ectotech.world.pressure.interfaces.PressureConsumer;
+import ectotech.world.modules.PressureModule;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.production.GenericCrafter;
@@ -26,6 +26,9 @@ public class PressurizedCrafter extends GenericCrafter {
 
     public boolean explodesOnSuperCritical = false;
 
+    /**if false, the pressure does not affect the crafting speed*/
+    public boolean pressureScalesEfficiency = true;
+
     public PressurizedCrafter(String name) {
         super(name);
     }
@@ -40,7 +43,7 @@ public class PressurizedCrafter extends GenericCrafter {
         ));
     }
 
-    public class PressurizedCrafterBuild extends GenericCrafterBuild implements Pressurized {
+    public class PressurizedCrafterBuild extends GenericCrafterBuild implements PressureConsumer {
 
         @Override public Building self() { return this; }
 
@@ -72,13 +75,13 @@ public class PressurizedCrafter extends GenericCrafter {
 
         @Override
         public boolean shouldConsume() {
-            return super.shouldConsume()
-                    && (!isPressureRequired() || pressureEfficiency() > 0f);
+            return super.shouldConsume() && (!isPressureRequired() || pressureEfficiency() > 0f);
         }
 
         @Override
         public float efficiencyScale() {
-            return super.efficiencyScale() * pressureEfficiency();
+            float base = super.efficiencyScale();
+            return pressureScalesEfficiency ? base * pressureEfficiency() : base;
         }
 
         @Override

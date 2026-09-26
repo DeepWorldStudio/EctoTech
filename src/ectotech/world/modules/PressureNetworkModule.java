@@ -1,8 +1,7 @@
-package ectotech.world.pressure.utils;
+package ectotech.world.modules;
 
 import arc.struct.Seq;
 import ectotech.EctoVars;
-import ectotech.game.EctoRules;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
 
 public class PressureNetworkModule {

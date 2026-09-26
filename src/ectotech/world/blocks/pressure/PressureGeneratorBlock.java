@@ -6,7 +6,7 @@ import ectotech.EctoVars;
 import ectotech.world.pressure.interfaces.PressurizedGate;
 import ectotech.world.pressure.interfaces.PressurizedGenerator;
 import ectotech.world.pressure.interfaces.Pressurized;
-import ectotech.world.pressure.utils.PressureModule;
+import ectotech.world.modules.PressureModule;
 import ectotech.world.geometry.BlockContactGeometry;
 import mindustry.gen.Building;
 import mindustry.ui.Bar;

@@ -1,13 +1,11 @@
 package ectotech.world.blocks.distribution;
 
 import arc.graphics.g2d.Draw;
-import arc.math.Mathf;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import ectotech.EctoVars;
-import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressureConsumer;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
-import ectotech.world.pressure.utils.PressureModule;
+import ectotech.world.modules.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.gen.Building;
 import mindustry.type.Item;
@@ -62,7 +60,7 @@ public class PneumaticDuctRouter extends DuctRouter {
         return 0;
     }
 
-    public class PneumaticDuctRouterBuild extends DuctRouterBuild implements Pressurized, PressurizedNetworkMember {
+    public class PneumaticDuctRouterBuild extends DuctRouterBuild implements PressureConsumer, PressurizedNetworkMember {
 
         @Override public Building self() {
             return this;

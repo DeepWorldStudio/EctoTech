@@ -2,8 +2,8 @@ package ectotech.world.pressure.interfaces;
 
 import arc.struct.Seq;
 import ectotech.world.geometry.BlockContactGeometry;
-import ectotech.world.pressure.utils.PressureModule;
-import ectotech.world.pressure.utils.PressureNetworkModule;
+import ectotech.world.modules.PressureModule;
+import ectotech.world.modules.PressureNetworkModule;
 import mindustry.gen.Building;
 
 public interface PressurizedNetworkMember {

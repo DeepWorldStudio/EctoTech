@@ -8,12 +8,13 @@ import arc.math.Angles;
 import arc.math.geom.Geometry;
 import arc.struct.Seq;
 import arc.util.Nullable;
-import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.modules.PressureModule;
+import ectotech.world.pressure.interfaces.PressureConsumer;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
-import ectotech.world.pressure.utils.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.core.Renderer;
 import mindustry.gen.Building;
+import mindustry.graphics.Layer;
 import mindustry.graphics.Lod;
 import mindustry.world.Tile;
 import mindustry.world.blocks.distribution.DirectionBridge;
@@ -112,7 +113,7 @@ public class PneumaticDuctBridge extends DuctBridge {
         ));
     }
 
-    public class PneumaticDuctBridgeBuild extends DuctBridgeBuild implements Pressurized, PressurizedNetworkMember {
+    public class PneumaticDuctBridgeBuild extends DuctBridgeBuild implements PressureConsumer, PressurizedNetworkMember {
 
         @Override public Building self() { return this; }
 
@@ -143,8 +144,7 @@ public class PneumaticDuctBridge extends DuctBridge {
             PressurizedNetworkMember.super.getPressureConnections(out);
 
             Building linked = findLink();
-            if (linked instanceof PressurizedNetworkMember other
-                    && !out.contains(other, true)) {
+            if (linked instanceof PressurizedNetworkMember other && !out.contains(other, true)) {
                 out.add(other);
             }
 
@@ -156,14 +156,8 @@ public class PneumaticDuctBridge extends DuctBridge {
                     Tile otherTile = tile.nearby(-dx * i, -dy * i);
                     if (otherTile == null || otherTile.build == null) continue;
 
-                    if (otherTile.build instanceof DirectionBridge.DirectionBridgeBuild bridge
-                            && bridge.block == block
-                            && bridge.team == team) {
-
-                        if (bridge.rotation == dir
-                                && bridge.findLink() == this
-                                && bridge instanceof PressurizedNetworkMember member
-                                && !out.contains(member, true)) {
+                    if (otherTile.build instanceof DirectionBridge.DirectionBridgeBuild bridge && bridge.block == block && bridge.team == team) {
+                        if (bridge.rotation == dir && bridge.findLink() == this && bridge instanceof PressurizedNetworkMember member && !out.contains(member, true)) {
                             out.add(member);
                         }
                         break;
@@ -174,9 +168,7 @@ public class PneumaticDuctBridge extends DuctBridge {
 
         @Override
         public boolean canPressureOutputTo(Building target, int side) {
-            // Терминальный мост: выводит вперёд как duct
             if (findLink() == null) return side == rotation;
-            // Есть link: локально не выводит — только удалённо через getPressureConnections
             return false;
         }
 
@@ -200,6 +192,8 @@ public class PneumaticDuctBridge extends DuctBridge {
             super.draw();
 
             if (connectorRegion == null || !connectorRegion.found()) return;
+
+            Draw.z(Layer.blockOver);
 
             for (Building other : proximity) {
                 if (other.block instanceof Duct) continue;

@@ -1,15 +1,13 @@
 package ectotech.world.blocks.distribution;
 
 import arc.graphics.g2d.Draw;
-import arc.math.Mathf;
 import arc.scene.ui.layout.Table;
 import arc.util.Nullable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import ectotech.EctoVars;
-import ectotech.world.pressure.interfaces.Pressurized;
+import ectotech.world.pressure.interfaces.PressureConsumer;
 import ectotech.world.pressure.interfaces.PressurizedNetworkMember;
-import ectotech.world.pressure.utils.PressureModule;
+import ectotech.world.modules.PressureModule;
 import ectotech.world.pressure.utils.PressureNetworkTypes;
 import mindustry.gen.Building;
 import mindustry.type.Item;
@@ -71,7 +69,7 @@ public class PneumaticOverflowDuct extends OverflowDuct {
         return build == null || build.sortItem == null ? 0 : build.sortItem.color.rgba();
     }
 
-    public class PneumaticOverflowDuctBuild extends OverflowDuctBuild implements Pressurized, PressurizedNetworkMember {
+    public class PneumaticOverflowDuctBuild extends OverflowDuctBuild implements PressureConsumer, PressurizedNetworkMember {
 
         public @Nullable Item sortItem;
 

@@ -3,11 +3,10 @@ package ectotech.world.pressure.interfaces;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import arc.util.Strings;
-import ectotech.EctoVars;
-import ectotech.game.EctoRules;
-import ectotech.world.pressure.utils.PressureModule;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import ectotech.EctoVars;
+import ectotech.world.modules.PressureModule;
 import mindustry.content.Fx;
 import mindustry.entities.Damage;
 import mindustry.gen.Building;
@@ -19,40 +18,18 @@ public interface Pressurized {
 
     Building self();
 
-    /** доступ к модулю */
     PressureModule pressureModule();
 
-    /** Удобный доступ к текущему давлению */
-    default float pressure() {
+    default float pressure(){
         return pressureModule().pressure;
     }
 
-    // Достаём параметры Block-конструктора
-
-    /** Операционное давление (100% эффективности) */
-    float operatingPressure();
-
-    /** Пороговое давление (порог входа или точка минимума) */
-    float thresholdPressure();
-
-    /** Требуется ли давление для работы */
-    boolean isPressureRequired();
-
-    /** Минимальная эффективность */
-    float minEfficiencyCoeff();
-
-    /** Максимальная эффективность */
-    float maxEfficiencyCoeff();
-
-    /** Коэффициенты утечки */
     float outflowTanhFactor();
     float outflowExponentCoefficient();
 
-    /** Критические давления */
     float criticalPressure();
     float superCriticalPressure();
 
-    /** Собственное изменение давления (+производство, -потребление) */
     float pressureFlow();
 
     boolean explodesOnSuperCritical();

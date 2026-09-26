@@ -1,4 +1,4 @@
-package ectotech.world.pressure.utils;
+package ectotech.world.modules;
 
 import arc.math.Mathf;
 import arc.util.Time;
@@ -6,6 +6,7 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import ectotech.EctoVars;
 import ectotech.game.EctoRules;
+import ectotech.world.pressure.interfaces.PressureConsumer;
 import ectotech.world.pressure.interfaces.Pressurized;
 import mindustry.Vars;
 
@@ -23,7 +24,7 @@ public class PressureModule {
 
         pressure = Math.max(EctoVars.absMinPressure, pressure);
 
-        efficiency = calculatePressureEfficiency(owner);
+        efficiency = owner instanceof PressureConsumer consumer ? calculatePressureEfficiency(consumer) : 1f;
 
         float flow = owner.pressureFlow();
         float flowScale = owner.pressureFlowScale();
@@ -63,7 +64,7 @@ public class PressureModule {
         }
     }
 
-    public float calculatePressureEfficiency(Pressurized owner) {
+    public float calculatePressureEfficiency(PressureConsumer owner) {
         boolean isPressureRequired = owner.isPressureRequired();
 
         float operatingPressure = owner.operatingPressure();
@@ -91,7 +92,7 @@ public class PressureModule {
         return Math.min(calculatedEfficiency, maxE);
     }
 
-    public static float maxEfficiencyPressure(Pressurized owner) {
+    public static float maxEfficiencyPressure(PressureConsumer owner) {
         float operatingPressure = owner.operatingPressure();
         float thresholdPressure = owner.thresholdPressure();
         float minE = owner.minEfficiencyCoeff();
