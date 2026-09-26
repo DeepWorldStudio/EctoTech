@@ -4,6 +4,7 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
+import arc.math.Interp;
 import arc.math.Mathf;
 import arc.math.Rand;
 import arc.math.geom.Vec2;
@@ -71,5 +72,23 @@ public class EctoFx {
             color(Color.valueOf("000000").a((1- Mathf.sinDeg(e.fin() * 180) * 0.75f) * 0.5f));
             Fill.circle(pX, pY,  2 + Mathf.sinDeg(e.fin() * 180) * shadowGrowFactor);
         }
+    }),
+
+    trailBulletSparks = new Effect(45, e->{
+        color(Color.white, e.color, e.fin());
+        rand.setSeed(e.id);
+        randLenVectors(e.id, 1, 3 + e.fin() * 3.75f, (x, y) -> {
+            float height = rand.random(15, 19);
+            Fill.square(e.x + x, EctoMathf.toIsometric(height * e.fin(), e.x + x, e.y + y).y, e.fout() + rand.random(0.15f, 0.2f), 45 + rand.nextFloat(45));
+        });
+    }),
+
+    bulletDespawnSparks = new Effect(50, e->{
+        color(Color.white, e.color, e.fin());
+        rand.setSeed(e.id);
+        randLenVectors(e.id, 9, 4 + e.fin() * 29, (x, y) -> {
+            float height = rand.random(25, 35);
+            Fill.square(e.x + x, EctoMathf.toIsometric(height * e.fin(), e.x + x, e.y + y).y, e.fout(Interp.circleOut) * rand.random(0.55f, 0.8f), 45 + rand.nextFloat(45));
+        });
     });
 }

@@ -20,6 +20,7 @@ import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.LaserBulletType;
 import mindustry.entities.effect.MultiEffect;
+import mindustry.entities.part.RegionPart;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.*;
 import mindustry.graphics.Layer;
@@ -36,20 +37,20 @@ public class EctoUnitTypes {
             fist, sickle, hammer,
 
             // legs
-            echo,
+            echo, whisper,
 
             // air
             discharge, crisis,
 
             // air, core
-            glare;
+            glare, flake;
 
     public static void load() {
 
         fist = new EctorumUnitType("fist") {{
             constructor = MechUnit::create;
 
-            researchCostMultiplier = 0.5f;
+            researchCostMultiplier = 0f;
 
             speed = 0.5f;
             hitSize = 9f;
@@ -82,7 +83,6 @@ public class EctoUnitTypes {
                     despawnEffect = Fx.hitBulletColor;
 
                     backColor = trailColor = Color.valueOf("ca5e65");
-                    engineColor = Pal.bulletYellow.cpy().mul(Color.white);
                     frontColor = Color.valueOf("e28d87");
                     lightColor = Pal.powerLight;
 
@@ -100,7 +100,7 @@ public class EctoUnitTypes {
 
             speed = 0.35f;
             hitSize = 11f;
-            health = 1500;
+            health = 1350;
             stepSoundVolume = 0.4f;
 
             alwaysCreateOutline = false;
@@ -109,6 +109,9 @@ public class EctoUnitTypes {
                 reload = 60f;
                 recoil = 2f;
                 shootSound = Sounds.shootScepter;
+                shootSoundVolume = 0.9f;
+                soundPitchMin = 0.7f;
+                soundPitchMax = 0.82f;
                 x = 5.5f;
                 layerOffset = -0.001f;
 
@@ -116,31 +119,35 @@ public class EctoUnitTypes {
                 shootY = 5f;
 
                 top = false;
+                alternate = false;
 
                 ejectEffect = Fx.casing2;
 
-                shoot = new ShootSpread();
+                bullet = new BasicBulletType(8f, 100, "mine-bullet") {{
+                    width = height = 11f;
 
-                bullet = new BasicBulletType(8f, 70) {{
-                    height = 9f;
-                    width = 7f;
-
-                    trailLength = 6;
-                    trailWidth = 1f;
+                    trailLength = 7;
+                    trailWidth = 2.2f;
 
                     shrinkY = 0f;
                     spin = 480f / 60f;
-                    sprite = "mine-bullet";
+                    trailSinMag = 0.18f;
+                    trailSinScl = 2f;
 
-                    shootEffect = Fx.shootSmall;
-                    despawnEffect = Fx.hitBulletColor;
-                    hitEffect = Fx.hitFuse;
+                    trailInterval = 3f;
+                    trailEffect = Fx.none;
+                    trailRotation = true;
+                    trailSpread = 1f;
+
+                    shootEffect = Fx.sparkShoot;
+
+                    hitColor = Color.valueOf("e28d87");
+                    hitEffect = despawnEffect = new MultiEffect(Fx.hitSquaresColor, Fx.hitBulletSmall);
                     pierce = true;
                     pierceCap = 3;
-                    pierceBuilding = false;
+                    pierceBuilding = true;
 
                     backColor = trailColor = Color.valueOf("ca5e65");
-                    engineColor = Pal.bulletYellow.cpy().mul(Color.white);
                     frontColor = Color.valueOf("e28d87");
                     lightColor = Pal.powerLight;
 
@@ -164,13 +171,13 @@ public class EctoUnitTypes {
             rotateSpeed = 2.6f;
             health = 350;
 
-            stepSound = Sounds.walkerStepSmall;
+            stepSound = Sounds.walkerStepTiny;
             stepSoundPitch = 1f;
             stepSoundVolume = 0.25f;
 
             legCount = 4;
             legLength = 8f;
-            legGroupSize = 3;
+            legGroupSize = 2;
 
             legForwardScl = 0.8f;
             legMoveSpace = 1.4f;
@@ -181,11 +188,12 @@ public class EctoUnitTypes {
 
             weapons.add(new Weapon() {{
                 x = 0f;
-                y = 3f;
+                y = 0f;
 
-                shootX = 1.1f;
-                shootY = 3.1f;
+                shootX = 0f;
+                shootY = 0f;
 
+                targetAir = false;
                 mirror = false;
                 rotate = false;
                 reload = 45f;
@@ -195,31 +203,39 @@ public class EctoUnitTypes {
                 shoot.shots = 3;
                 shoot.shotDelay = 6;
 
-                bullet = new ArcWaveBulletType(1.5f, 15f) {{
+                bullet = new ArcWaveBulletType(1.5f, 10f) {{
+                    keepVelocity = scaleKeepVelocity = false;
+
                     lifetime = 60f;
 
                     arcAngle = 28f;
                     hitWidth = 5f;
 
+                    waveColor = Color.valueOf("82568F");
                     hitColor = waveColor.cpy().lerp(Color.white, 0.25f);
                     hitEffect = new MultiEffect(Fx.hitLiquid, Fx.regenSuppressSeek);
+                    despawnEffect = Fx.none;
+                    shootEffect = Fx.none;
+                    smokeEffect = Fx.none;
 
                     drawStartRadius = 6f;
                     drawFadeLength = 2f;
 
-                    tipRadius = 0.4f;
                     stroke = 1.4f;
 
                     fadeFraction = 0.2f;
                     fadeInterp = Interp.pow3In;
 
-                    waveColor = hitColor = Color.valueOf("82568F");
+                    reflect = true;
+                    shieldAbsorb = true;
+                    applyStatusThroughUnitShield = false;
+                    immuneShooter = true;
+                    immuneReflectorTeam = false;
 
-                    buildingDamageMultiplier = 0.25f;
                     status = StatusEffects.slow;
                     statusDuration = 120f;
 
-                    collidesAir = true;
+                    collidesAir = false;
                     collidesGround = true;
                 }};
             }});
@@ -232,6 +248,153 @@ public class EctoUnitTypes {
                 duration = 120f;
                 includeSelf = false;
                 effectColor = Color.valueOf("4D3873").lerp(Color.white, 0.2f);
+            }});
+
+            outlineColor = EctoPal.ectorumSpiderOutline;
+        }};
+
+        whisper = new EctorumUnitType("whisper") {{
+            constructor = LegsUnit::create;
+
+            speed = 0.6f;
+            drag = 0.4f;
+            hitSize = 13f;
+            rotateSpeed = 4f;
+            health = 1050;
+
+            stepSound = Sounds.walkerStepSmall;
+            stepSoundPitch = 1f;
+            stepSoundVolume = 0.25f;
+
+            legCount = 6;
+            legLength = 11f;
+            legGroupSize = 3;
+
+            legForwardScl = 0.8f;
+            legMoveSpace = 1.4f;
+            hovering = true;
+            faceTarget = true;
+
+            shadowElevation = 0.2f;
+            groundLayer = Layer.legUnit - 1f;
+
+            weapons.add(new Weapon() {{
+                x = 5.5f;
+                y = -3.5f;
+
+                targetAir = false;
+                mirror = true;
+                alternate = false;
+                rotate = false;
+                baseRotation = 240f;
+                shootCone = 180f;
+                reload = 1.2f * 60f;
+                recoil = 2f;
+
+                shoot = new ShootSpread() {{
+                    shots = 3;
+                    shotDelay = 0.04f * 60f;
+                    spread = 3f;
+                }};
+
+                inaccuracy = 8f;
+                velocityRnd = 0.25f;
+
+                bullet = new BasicBulletType(5f, 45f, "large-orb") {{
+                    width = 10f;
+                    height = 10f;
+                    shrinkY = shrinkX = 0f;
+                    shootEffect = smokeEffect = despawnEffect = Fx.none;
+
+                    frontColor = Color.valueOf("f1d4ff");
+                    backColor = Color.valueOf("9b5cb2");
+                    trailColor = Color.valueOf("9b5cb2");
+                    trailLength = 3;
+                    trailWidth = 2.5f;
+
+                    drag = 0.08f;
+                    lifetime = 75f;
+
+                    homingPower = 0.04f;
+                    homingDelay = 0f;
+                    followAimSpeed = 1f;
+
+                    pierce = false;
+                    hitEffect = Fx.hitLaserBlast;
+
+                    shootSound = Sounds.shootMerui;
+                    hitShake = 1.5f;
+
+                    fragOnHit = fragOnAbsorb = false;
+                    setDefaults = false;
+
+                    collidesAir = false;
+
+                    fragVelocityMin = fragVelocityMax = 0f;
+
+                    fragOnDespawn = true;
+                    fragBullets = 1;
+                    fragOffsetMax = fragOffsetMin = 0f;
+
+                    fragBullet = new BasicBulletType(0f, 0f, "large-orb") {{
+                        width = 10f;
+                        height = 10f;
+                        shrinkY = shrinkX = 0f;
+
+                        frontColor = Color.valueOf("f1d4ff");
+                        backColor = Color.valueOf("9b5cb2");
+
+                        lifetime = 4f * 60f;
+
+                        collidesAir = false;
+                        despawnHit = true;
+                        splashDamage = 110f;
+                        splashDamageRadius = 3f * 8f;
+                        hitEffect = Fx.sapExplosion;
+                        despawnSound = Sounds.explosionArtilleryShock;
+                        hitShake = 1.5f;
+
+                        shootEffect = smokeEffect = despawnEffect = Fx.none;
+
+                        bulletInterval = 65f;
+                        intervalDelay = 60f;
+                        intervalBullets = 1;
+
+                        intervalBullet = new ArcWaveBulletType(1.6f, 15f) {{
+                            arcAngle = 360f;
+                            lifetime = 20f;
+
+                            fadeFraction = 0.3f;
+                            fadeInterp = Interp.pow2In;
+
+                            waveColor = Color.valueOf("82568F");
+                            hitColor = waveColor.cpy().lerp(Color.white, 0.25f);
+
+                            hitEffect = new MultiEffect(Fx.hitLiquid, Fx.regenSuppressSeek);
+                            despawnEffect = Fx.none;
+                            shootEffect = Fx.none;
+                            smokeEffect = Fx.none;
+
+                            shootSoundVolume = 0.7f;
+
+                            reflect = false;
+                            shieldAbsorb = true;
+
+                            hitWidth = 2f;
+                            drawFadeLength = 2f;
+
+                            collidesAir = false;
+                            collidesGround = true;
+                        }};
+                    }};
+                }};
+            }});
+
+            parts.addAll(new RegionPart("") {{
+                drawRegion = false;
+                heatColor = Color.valueOf("e0afff");
+                heatProgress = PartProgress.warmup.mul(0.7f).add(PartProgress.smoothReload);
+                heatLayerOffset = 0.001f;
             }});
 
             outlineColor = EctoPal.ectorumSpiderOutline;
@@ -250,7 +413,7 @@ public class EctoUnitTypes {
             engineOffset = 5.3f;
 
             setEnginesMirror(
-                    new FlameJetEngine(3.4f,  -3.6f, 1.08f, 315f)
+                    new FlameJetEngine(3.4f, -3.6f, 1.08f, 315f)
             );
 
             faceTarget = true;
@@ -293,7 +456,7 @@ public class EctoUnitTypes {
                     lifetime = 8f;
 
                     shootEffect = Fx.hitLaserBlast;
-                    colors = new Color[]{
+                    colors = new Color[] {
                             EctoPal.spasmLaser.cpy().mul(1f, 1f, 1f, 0.4f),
                             EctoPal.spasmLaser,
                             Color.white
@@ -303,6 +466,7 @@ public class EctoUnitTypes {
                     ammoMultiplier = 2;
 
                     pierceCap = 4;
+                    pierceDamageFactor = 0.75f;
                 }};
             }});
 
@@ -351,7 +515,7 @@ public class EctoUnitTypes {
 
                 mirror = true;
                 rotate = false;
-                reload = 0.2f * 60f;
+                reload = 0.4f * 60f;
 
                 baseRotation = 180f;
                 shootCone = 180f;
@@ -475,106 +639,108 @@ public class EctoUnitTypes {
 
         float coreFleeRange = 400f;
 
-        glare = new EctorumUnitType("glare") {{
-            coreUnitDock = true;
-            controller = u -> new BuilderAI(true, coreFleeRange);
-            isEnemy = false;
-            envDisabled = 0;
+        glare = new EctorumUnitType("glare") {
+            {
+                coreUnitDock = true;
+                controller = u -> new BuilderAI(true, coreFleeRange);
+                isEnemy = false;
+                envDisabled = 0;
 
-            constructor = UnitEntity::create;
-            flying = true;
+                constructor = UnitEntity::create;
+                flying = true;
 
-            faceTarget = true;
-            targetPriority = -2;
-            lowAltitude = false;
-            fogRadius = 0;
+                faceTarget = true;
+                targetPriority = -2;
+                lowAltitude = false;
+                fogRadius = 0;
 
-            speed = 5f;
-            rotateSpeed = 8f;
-            accel = 0.08f;
-            drag = 0.04f;
+                speed = 5f;
+                rotateSpeed = 8f;
+                accel = 0.08f;
+                drag = 0.04f;
 
-            hitSize = 9f;
-            health = 350f;
-            armor = 1f;
+                hitSize = 9f;
+                health = 350f;
+                armor = 1f;
 
-            itemCapacity = 45;
+                itemCapacity = 45;
 
-            buildSpeed = 0.8f;
+                buildSpeed = 0.8f;
 
-            mineTier = 1;
-            mineSpeed = 4f;
-            mineWalls = true;
-            mineFloor = false;
-            targetable = true;
-            hittable = true;
+                mineTier = 1;
+                mineSpeed = 4f;
+                mineWalls = true;
+                mineFloor = false;
+                targetable = true;
+                hittable = true;
 
-            engineOffset = 7f;
+                engineOffset = 7f;
 
-            buildBeamOffset = 2f;
-            mineBeamOffset = 2f;
+                buildBeamOffset = 2f;
+                mineBeamOffset = 2f;
 
-            alwaysCreateOutline = true;
+                alwaysCreateOutline = true;
 
-            weapons.add(new CoreProximityWeapon("ectotech-glare-weapon") {{
-                top = false;
-                reload = 45f;
-                layerOffset = -0.001f;
+                weapons.add(new CoreProximityWeapon("ectotech-glare-weapon") {{
+                    top = false;
+                    reload = 45f;
+                    layerOffset = -0.001f;
 
-                x = 4f;
-                y = 2.8f;
+                    x = 4f;
+                    y = 2.8f;
 
-                shootX = -1f;
-                shootY = 2.75f;
+                    shootX = -1f;
+                    shootY = 2.75f;
 
-                inactiveWeaponOffset = 0.6f;
-                inactiveColor = Color.valueOf("78726F");
-                inactiveColorAlpha = 0.5f;
-                zoneWarmupSpeed = 0.03f;
+                    inactiveWeaponOffset = 0.6f;
+                    inactiveColor = Color.valueOf("78726F");
+                    inactiveColorAlpha = 0.5f;
+                    zoneWarmupSpeed = 0.03f;
 
-                mirror = true;
-                invert = false;
+                    mirror = true;
+                    invert = false;
 
-                shoot = new ShootSpread() {{
-                    shots = 3;
-                    shotDelay = 5f;
-                    spread = 2f;
-                }};
+                    shoot = new ShootSpread() {{
+                        shots = 3;
+                        shotDelay = 5f;
+                        spread = 2f;
+                    }};
 
-                inaccuracy = 3f;
-                shootSound = Sounds.shootAlpha;
+                    inaccuracy = 3f;
+                    shootSound = Sounds.shootAlpha;
 
-                bullet = new BasicBulletType(3.5f, 20) {{
-                    scaleKeepVelocity = true;
-                    width = 1.5f;
-                    height = 5f;
-                    hitEffect = despawnEffect = Fx.hitBulletColor;
-                    trailWidth = 1.2f;
-                    trailLength = 4;
-                    shootEffect = Fx.shootSmallColor;
-                    smokeEffect = Fx.hitLaserColor;
-                    backColor = trailColor = Pal.yellowBoltFront;
-                    hitColor = Pal.yellowBoltFront;
-                    frontColor = Color.white;
-                    lightColor = Pal.yellowBoltFront;
+                    bullet = new BasicBulletType(3.5f, 20) {{
+                        scaleKeepVelocity = true;
+                        width = 1.5f;
+                        height = 5f;
+                        hitEffect = despawnEffect = Fx.hitBulletColor;
+                        trailWidth = 1.2f;
+                        trailLength = 4;
+                        shootEffect = Fx.shootSmallColor;
+                        smokeEffect = Fx.hitLaserColor;
+                        backColor = trailColor = Pal.yellowBoltFront;
+                        hitColor = Pal.yellowBoltFront;
+                        frontColor = Color.white;
+                        lightColor = Pal.yellowBoltFront;
 
-                    lifetime = 70f;
-                    buildingDamageMultiplier = 0.01f;
-                    homingPower = 0.04f;
-                }};
-            }});
+                        lifetime = 50f;
+                        buildingDamageMultiplier = 0.01f;
+                        homingPower = 0.04f;
+                    }};
+                }});
 
-            abilities.add(new BuildRepairFieldAbility() {{
-                maxHealPercent = 10f;
-                reload = 90f;
-                range = 8 * 8f;
-                fullPowerRange = 8f;
+                abilities.add(new BuildRepairFieldAbility() {{
+                    maxHealPercent = 10f;
+                    reload = 90f;
+                    range = 8 * 8f;
+                    fullPowerRange = 8f;
 
-                squareRad = 4.3f;
-            }});
+                    squareRad = 4.3f;
+                }});
 
-            outlineColor = EctoPal.ectorumCoreUnitOutline;
-        }
+                outlineColor = EctoPal.ectorumCoreUnitOutline;
+            }
+
             @Override
             public void drawOutline(Unit unit) {
                 float z = Draw.z();

@@ -2,14 +2,13 @@ package ectotech.content;
 
 import arc.Core;
 import arc.graphics.Color;
+import arc.graphics.Mesh;
+import arc.graphics.g3d.Camera3D;
 import ectotech.EctoTech;
 import ectotech.game.EctoCampaignRules;
+import ectotech.world.gen.EctorumPlanetGenerator;
 import mindustry.content.Planets;
-import mindustry.game.Rules;
-import mindustry.graphics.g3d.HexMesh;
-import mindustry.graphics.g3d.HexSkyMesh;
-import mindustry.graphics.g3d.MultiMesh;
-import mindustry.maps.planet.SerpuloPlanetGenerator;
+import mindustry.graphics.g3d.*;
 import mindustry.type.Planet;
 import mindustry.world.meta.Env;
 
@@ -17,54 +16,38 @@ public class EctoPlanets {
 
     public static Planet ectorum;
 
-    private static final Color cMain = Color.valueOf("a47ac4");   // основной фиолетовый
-    private static final Color cDark = Color.valueOf("3a245d");   // тёмный серо-фиолетовый
-    private static final Color cCloud1 = Color.valueOf("b49ac9"); // облака слой 1
-    private static final Color cCloud2 = Color.valueOf("e7e0f0"); // облака слой 2
+    private static Mesh atmosphereProxy;
 
     public static void load() {
-        ectorum = new Planet("ectorum", Planets.sun, 1.35f, 4) {{
-                generator = new SerpuloPlanetGenerator();
+        ectorum = new Planet("ectorum", Planets.sun, 1.35f, 4) {
+            {
+                generator = new EctorumPlanetGenerator();
 
                 meshLoader = () -> new HexMesh(this, 6);
 
                 cloudMeshLoader = () -> new MultiMesh(
-                        new HexSkyMesh(this,
-                                11,
-                                0.15f,
-                                0.13f,
-                                5,
-                                cCloud1.cpy().a(0.40f),
-                                2,
-                                0.45f,
-                                0.90f,
-                                0.38f
-                        ),
-                        new HexSkyMesh(this,
-                                1,
-                                0.60f,
-                                0.16f,
-                                5,
-                                cCloud2.cpy().a(0.25f),
-                                2,
-                                0.45f,
-                                1.00f,
-                                0.41f
-                        )
+                        // медленный, редкий, рваный, крупными пятнами — грозовые поля
+                        new HexSkyMesh(this, 7,  0.06f, 0.11f,  5, Color.valueOf("5b4a7a").a(0.55f), 3, 0.6f,  1.4f, 0.50f),
+                        // быстрый, тонкий, мелкий — перистые полосы над ним
+                        new HexSkyMesh(this, 23, 0.32f, 0.155f, 5, Color.valueOf("d9d1e6").a(0.22f), 2, 0.4f,  2.2f, 0.56f)
                 );
 
                 // Внешний вид/атмосфера
                 hasAtmosphere = true;
-                atmosphereColor = cDark;
-                atmosphereRadIn = 0.02f;
-                atmosphereRadOut = 0.35f;
+                atmosphereColor = Color.valueOf("2F4E70");
+                atmosphereRadIn  = 0.02f;
+                atmosphereRadOut = 0.46f;
+                clipRadius = 2.5f;
 
-                iconColor = cMain;
-                landCloudColor = cMain.cpy().a(0.45f);
+                iconColor = Color.valueOf("a47ac4");
+                landCloudColor = iconColor.cpy().a(0.45f);
 
                 // Камера в планетарном UI
                 minZoom = 0.50f;
-                maxZoom = 4.00f;
+                maxZoom = 2.50f;
+
+                lightSrcTo = 0.5f;
+                lightDstFrom = 0.2f;
 
                 // Доступность в кампании
                 alwaysUnlocked = true;
@@ -74,40 +57,66 @@ public class EctoPlanets {
                 allowLaunchToNumbered = false;
                 allowSelfSectorLaunch = false;
 
-                // Кампания/запуски
+                // Эти возможности включены у планеты,
+                // но сюжетные пресеты переопределят их.
                 allowLaunchLoadout = true;
-                allowLaunchSchematics = false;
+                allowLaunchSchematics = true;
+
                 allowSectorInvasion = false;
                 allowWaves = true;
                 clearSectorOnLose = true;
 
                 allowCampaignRules = true;
 
-                campaignRuleDefaults = new EctoCampaignRules(){{
+                campaignRuleDefaults = new EctoCampaignRules() {{
                     fog = true;
                     clearFogOnCapture = true;
                 }};
 
                 campaignRules = new EctoCampaignRules();
 
-                startSector = 15;
+                startSector = 92;
                 defaultCore = EctoBlocks.coreSpark;
 
                 defaultEnv = Env.terrestrial | Env.oxygen | Env.groundWater;
 
-                ruleSetter = (Rules r) -> {
+                ruleSetter = r -> {
                     if (EctoTech.ectorumTeam != null) r.waveTeam = EctoTech.ectorumTeam;
 
                     r.placeRangeCheck = false;
                     r.coreDestroyClear = true;
+                    r.allowCoreUnloaders = false;
+                    r.onlyDepositCore = true;
+                    r.hideSpawns = false;
                 };
             }
 
             @Override
             public void loadRules() {
-                EctoCampaignRules current = campaignRules instanceof EctoCampaignRules e ? e : new EctoCampaignRules();
+                campaignRules = Core.settings.getJson(name + "-campaign-rules", EctoCampaignRules.class, () -> campaignRules instanceof EctoCampaignRules ? (EctoCampaignRules) campaignRules : new EctoCampaignRules());
+            }
 
-                campaignRules = Core.settings.getJson(name + "-campaign-rules", EctoCampaignRules.class, () -> current);
+            @Override
+            public void drawAtmosphere(Mesh ignored, Camera3D cam) {
+                float proxyRadius = Math.max(
+                        radius + atmosphereRadOut + 0.05f,
+                        PlanetRenderer.outlineRad * radius + 0.05f
+                );
+
+                if (atmosphereProxy == null) {
+                    atmosphereProxy = MeshBuilder.buildHex(Color.white, 2, proxyRadius);
+                }
+
+                super.drawAtmosphere(atmosphereProxy, cam);
+            }
+
+            @Override
+            public void removeContent() {
+                if (atmosphereProxy != null) {
+                    atmosphereProxy.dispose();
+                    atmosphereProxy = null;
+                }
+                super.removeContent();
             }
         };
     }

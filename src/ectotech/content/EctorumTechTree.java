@@ -42,7 +42,7 @@ public class EctorumTechTree {
             node(geyserTurbine, ectorumSector, () -> {
                 node(powerTransmitter, Seq.with(new Research(impulseBore)), () -> {
                     node(zincBattery, () -> {
-                        node(zincBattery, () -> {
+                        node(zincBatteryLarge, Seq.with(new OnSector(ancientCanyon)), () -> {
 
                         });
                     });
@@ -55,7 +55,27 @@ public class EctorumTechTree {
                 });
 
                 node(compoundAssembler, Seq.with(new OnSector(foothills)), () -> {
+                    node(sulfideCrucible, Seq.with(new OnSector(ruins)), () -> {
 
+                    });
+
+                    node(pneumaticPump, () -> {
+                        node(compositeConduit, () -> {
+                            node(compositeLiquidJunction, () -> {
+                                node(compositeBridgeConduit, () -> {
+                                    node(armoredCompositeConduit, () -> {
+
+                                    });
+                                });
+
+                                node(compositeLiquidRouter, () -> {
+                                    node(compositeLiquidContainer, () -> {
+
+                                    });
+                                });
+                            });
+                        });
+                    });
                 });
             });
 
@@ -66,6 +86,20 @@ public class EctorumTechTree {
                         node(bismuthWallLarge, () -> {
 
                         });
+
+                        node(darkScrapWall, Seq.with(new OnSector(wasteland)), () -> {
+                            node(darkScrapWallLarge, () -> {});
+                        });
+
+                        node(zincCasing, Seq.with (new OnSector(wasteland)), () -> {
+                            node(zincCasingLarge, () -> {
+
+                            });
+                        });
+                    });
+
+                    node(brazier, Seq.with(new OnSector(ancientCanyon)), () -> {
+
                     });
                 });
             });
@@ -82,7 +116,8 @@ public class EctorumTechTree {
                 node(EctoUnitTypes.fist);
 
                 node(groundReassemblyUnit, Seq.with(new OnSector(recyclingFacility)), () -> {
-
+                    node(EctoUnitTypes.sickle);
+                    node(EctoUnitTypes.whisper);
                 });
 
                 node(spiderAssemblyUnit, Seq.with(new OnSector(ruins)), () -> {
@@ -96,17 +131,9 @@ public class EctorumTechTree {
 
             //Sectors tree
             node(theHollow, () -> {
+                node(wasteland, Seq.with(new SectorComplete(theHollow), new Research(impulseBore), new Research(powerTransmitter), new Research(sentinel)), () -> {
 
-                node(wasteland, Seq.with(
-                        new SectorComplete(theHollow),
-                        new Research(impulseBore),
-                        new Research(powerTransmitter),
-                        new Research(sentinel)
-                ), () -> {
-
-                    node(foothills, Seq.with(
-                            new SectorComplete(wasteland),
-                            new Research(highPressureSiliconSmelter)
+                    node(foothills, Seq.with(new SectorComplete(wasteland), new Research(highPressureSiliconSmelter)
 
                             /*
                              * TODO:
@@ -114,9 +141,7 @@ public class EctorumTechTree {
                              */
                     ), () -> {
 
-                        node(ancientCanyon, Seq.with(
-                                new SectorComplete(foothills),
-                                new Research(compoundAssembler)
+                        node(ancientCanyon, Seq.with(new SectorComplete(foothills), new Research(compoundAssembler)
 
                                 /*
                                  * TODO:
@@ -124,8 +149,7 @@ public class EctorumTechTree {
                                  */
                         ), () -> {
 
-                            node(ruins, Seq.with(
-                                    new SectorComplete(ancientCanyon)
+                            node(ruins, Seq.with(new SectorComplete(ancientCanyon), new Research(brazier)
 
                                     /*
                                      * TODO:
@@ -168,8 +192,7 @@ public class EctorumTechTree {
                                  * Серная ветка:
                                  * Ruins -> Dried River -> Sulfuric Swamp -> Volcanic Land
                                  */
-                                node(driedRiver, Seq.with(
-                                        new SectorComplete(ruins)
+                                node(driedRiver, Seq.with(new SectorComplete(ruins)
 
                                         /*
                                          * TODO:
@@ -177,8 +200,7 @@ public class EctorumTechTree {
                                          */
                                 ), () -> {
 
-                                    node(sulfuricSwamp, Seq.with(
-                                            new SectorComplete(driedRiver)
+                                    node(sulfuricSwamp, Seq.with(new SectorComplete(driedRiver)
 
                                             /*
                                              * TODO:

@@ -1,15 +1,16 @@
 package ectotech.content;
 
 import arc.graphics.Color;
+import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.type.StatusEffect;
 
 public class EctoStatusEffects {
-    public static StatusEffect sanded;
+    public static StatusEffect sanded, zinced;
 
     public static void load() {
 
-        sanded = new StatusEffect("quicksand-stuck") {{
+        sanded = new StatusEffect("sanded") {{
             color = Color.valueOf("F2B16F");
             speedMultiplier = 0.7f;
             reloadMultiplier = 0.6f;
@@ -21,6 +22,14 @@ public class EctoStatusEffects {
             init(() -> {
                 opposites.add(StatusEffects.wet);
             });
+        }};
+
+        zinced = new StatusEffect("zinced") {{
+            color = EctoItems.zinc.color;
+            speedMultiplier = 0.8f;
+            reloadMultiplier = 0.7f;
+
+            effect = Fx.corrosionVapor;
         }};
     }
 }

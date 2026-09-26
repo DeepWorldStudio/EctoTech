@@ -1,6 +1,5 @@
 package ectotech;
 
-import arc.Core;
 import arc.Events;
 import arc.util.Log;
 import arc.util.Time;
@@ -38,8 +37,7 @@ public class EctoTech extends Mod {
         Events.on(EventType.ClientLoadEvent.class, e -> {
             Vars.ui.campaignRules = new EctoCampaignRulesDialog();
 
-            Core.app.post(EctoIconLoader::load);
-
+            EctoIconLoader.install();
             EctoCustomRulesDialog.install();
             EctoTeamsUI.install();
 
@@ -48,14 +46,17 @@ public class EctoTech extends Mod {
             EctoVanillaSpritesSwapper.register(Items.silicon, "silicon");
             EctoVanillaSpritesSwapper.register(Items.thorium, "thorium");
 
+            EctoLoadouts.register();
+
             EctoVanillaSpritesSwapper.updateUI();
+
+            EctoVanillaSpritesSwapper.apply(Vars.state.isPlaying() && Vars.state.rules.planet == EctoPlanets.ectorum);
 
             Time.runTask(10f, () -> Log.info("EctoTech: Client loaded"));
         });
 
         Events.on(EventType.WorldLoadEvent.class, e -> {
             EctoVanillaSpritesSwapper.apply(Vars.state.rules.planet == EctoPlanets.ectorum);
-
         });
 
         Events.on(EventType.SectorCaptureEvent.class, e -> {
@@ -79,6 +80,7 @@ public class EctoTech extends Mod {
         EctoUnitTypes.load();
         EctoShaders.load();
         EctoBlocks.load();
+        EctoLoadouts.load();
         EctoPlanets.load();
         EctoSectorPresets.load();
         EctorumTechTree.load();
