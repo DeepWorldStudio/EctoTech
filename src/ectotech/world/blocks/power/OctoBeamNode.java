@@ -57,12 +57,6 @@ public class OctoBeamNode extends BeamNode {
     }
 
     @Override
-    public void setBars(){
-        super.setBars();
-        removeBar("batteries");
-    }
-
-    @Override
     public void load() {
         super.load();
         powerBeamSphere = Core.atlas.find(name + "-beam-sphere", "power-beam-sphere");

@@ -1,12 +1,17 @@
 package ectotech.graphics;
 
+import arc.Core;
 import arc.graphics.Texture;
 import arc.graphics.g2d.Font;
 import arc.graphics.g2d.Font.Glyph;
 import arc.graphics.g2d.TextureAtlas.AtlasRegion;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.geom.Vec2;
+import arc.scene.Group;
+import arc.scene.ui.Label;
+import arc.struct.IntMap;
 import arc.util.Log;
+import arc.util.Nullable;
 import arc.util.Scaling;
 import mindustry.Vars;
 import mindustry.ctype.ContentType;
@@ -20,8 +25,17 @@ public final class EctoIconLoader{
 
     private static int nextCode = minCode;
     private static boolean loaded;
+    private static final IntMap<UnlockableContent> registered = new IntMap<>();
 
     private EctoIconLoader(){}
+
+    public static void install() {
+        Core.app.post(() -> {
+            EctoIconLoader.load();
+
+            Core.app.post(EctoIconLoader::reload);
+        });
+    }
 
     public static void load() {
         if (loaded || Vars.headless) return;
@@ -31,13 +45,11 @@ public final class EctoIconLoader{
             return;
         }
 
-        loaded = true;
-
         int count = 0;
 
         for (var type : ContentType.all) {
             for (var content : Vars.content.getBy(type)) {
-                if (content instanceof UnlockableContent uc && isEcto(uc)) {
+                if (content instanceof UnlockableContent uc && isEctoTechContent(uc)) {
                     if (register(uc)) count++;
                 }
             }
@@ -46,16 +58,61 @@ public final class EctoIconLoader{
         Log.info("EctoTech: registered @ content text icons.", count);
     }
 
-    private static boolean isEcto(UnlockableContent content) {
-        return content.minfo.mod != null
-                && content.minfo.mod.name.equals(modName);
+    public static void reload() {
+        if (Vars.headless) return;
+
+        if (!loaded) {
+            load();
+            return;
+        }
+
+        if (Fonts.def == null || Fonts.outline == null) return;
+
+        int count = 0;
+
+        for (var entry : registered) {
+            int code = entry.key;
+            UnlockableContent content = entry.value;
+
+            if (Fonts.getUnicode(content.name) != code) {
+                Log.warn("EctoTech: Unicode mapping for '@' has changed; reload skipped.", content.name);
+                continue;
+            }
+
+            TextureRegion region = currentIcon(content);
+            if (region == null) {
+                Log.warn("EctoTech: cannot refresh text icon for '@': no valid UI region.", content.name);
+                continue;
+            }
+
+            String regionName = region instanceof AtlasRegion atlas ? atlas.name : content.name;
+
+            Fonts.registerIcon(content.name, regionName, code, region);
+
+            setGlyph(Fonts.def, code, region);
+            setGlyph(Fonts.outline, code, region);
+
+            if (Fonts.icon != null) {
+                setGlyph(Fonts.icon, code, region);
+            }
+
+            count++;
+        }
+
+        loaded = true;
+
+        if (count > 0 && Core.scene != null) {
+            invalidateLabels(Core.scene.root);
+        }
+
+        Log.info("EctoTech: refreshed @ content text icons.", count);
     }
 
     private static boolean register(UnlockableContent content) {
         if (Fonts.hasUnicodeStr(content.name)) return false;
 
-        TextureRegion region = content.uiIcon;
-        if (region == null || !region.found()) {
+        TextureRegion region = currentIcon(content);
+        if (region == null) {
             Log.warn("EctoTech: UI icon for '@' was not found.", content.name);
             return false;
         }
@@ -66,31 +123,24 @@ public final class EctoIconLoader{
             return false;
         }
 
-        String regionName = region instanceof AtlasRegion atlas
-                ? atlas.name
-                : content.name;
+        String regionName = region instanceof AtlasRegion atlas ? atlas.name : content.name;
 
-        /*
-         * Регистрирует соответствия:
-         * content.name -> Unicode;
-         * Unicode -> имя региона;
-         * content.name -> строка с символом.
-         *
-         * Созданные registerIcon() глифы имеют page = 0,
-         * поэтому ниже они сразу заменяются корректными.
-         */
         Fonts.registerIcon(content.name, regionName, code, region);
 
         setGlyph(Fonts.def, code, region);
         setGlyph(Fonts.outline, code, region);
 
-        // Не обязательно для :name: в обычном тексте,
-        // но полезно при прямом использовании Fonts.icon.
         if (Fonts.icon != null) {
             setGlyph(Fonts.icon, code, region);
         }
 
+        registered.put(code, content);
+
         return true;
+    }
+
+    private static boolean isEctoTechContent(UnlockableContent content) {
+        return content.minfo.mod != null && content.minfo.mod.name.equals(modName);
     }
 
     private static void setGlyph(Font font, int code, TextureRegion region) {
@@ -117,11 +167,16 @@ public final class EctoIconLoader{
         glyph.kerning = null;
         glyph.fixedWidth = true;
 
-        // Главное отличие от Fonts.registerIcon():
-        // используем реальную страницу текстуры иконки.
         glyph.page = page;
 
         font.getData().setGlyph(code, glyph);
+    }
+
+    private static void invalidateLabels(Group group) {
+        for (var element : group.getChildren()) {
+            if (element instanceof Label label) label.invalidateHierarchy();
+            if (element instanceof Group child) invalidateLabels(child);
+        }
     }
 
     private static int getTexturePage(Font font, Texture texture) {
@@ -131,31 +186,40 @@ public final class EctoIconLoader{
             }
         }
 
-        /*
-         * Пиксели и текстура не копируются.
-         * В Font добавляется только ссылка на уже существующую
-         * текстуру атласа.
-         */
         font.getRegions().add(new TextureRegion(texture));
         return font.getRegions().size - 1;
+    }
+
+    private static @Nullable TextureRegion currentIcon(UnlockableContent content) {
+        TextureRegion region = content.uiIcon;
+
+        if (region instanceof AtlasRegion atlas && atlas.name != null && Core.atlas != null) {
+            region = Core.atlas.find(atlas.name, region);
+        }
+
+        if (region == null || !region.found() || region.texture == null || region.texture.isDisposed() || region.width <= 0 || region.height <= 0) {
+            return null;
+        }
+        return region;
     }
 
     private static int nextFreeCode() {
         while (nextCode <= maxCode) {
             int code = nextCode++;
 
-            if (Fonts.unicodeToName(code) != null) continue;
-            if (hasGlyph(Fonts.def, code)) continue;
-            if (hasGlyph(Fonts.outline, code)) continue;
-            if (Fonts.icon != null && hasGlyph(Fonts.icon, code)) continue;
-
+            if (Fonts.unicodeToName(code) != null || hasGlyph(Fonts.def, code) || hasGlyph(Fonts.outline, code) || hasGlyph(Fonts.icon, code)) continue;
             return code;
         }
 
         return -1;
     }
 
-    private static boolean hasGlyph(Font font, int code) {
-        return font.getData().getGlyph((char) code) != null;
+    private static boolean hasGlyph(Font font, int code){
+        if (font == null) return false;
+
+        var data = font.getData();
+        Glyph glyph = data.getGlyph((char)code);
+
+        return glyph != null && glyph != data.missingGlyph;
     }
 }

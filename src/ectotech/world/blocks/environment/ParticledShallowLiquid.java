@@ -1,6 +1,5 @@
 package ectotech.world.blocks.environment;
 
-import arc.graphics.Color;
 import arc.graphics.Pixmap;
 import arc.util.Nullable;
 import mindustry.graphics.MultiPacker;
@@ -68,6 +67,8 @@ public class ParticledShallowLiquid extends ParticledFloor {
             packer.add(PageType.environment, resultName, base);
             base.dispose();
         }
+
+        blendGroup = this;
 
         super.createIcons(packer);
     }

@@ -1,23 +1,34 @@
 package ectotech.world.meta;
 
 import arc.Core;
+import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectMap;
+import arc.struct.Seq;
 import arc.util.Scaling;
 import arc.util.Strings;
+import ectotech.world.aspects.BuildAspect;
+import ectotech.world.blocks.environment.SteamGeyser;
+import ectotech.world.blocks.units.UpgradePlan;
+import mindustry.Vars;
 import mindustry.content.StatusEffects;
 import mindustry.ctype.UnlockableContent;
 import mindustry.entities.bullet.BulletType;
 import mindustry.gen.Icon;
+import mindustry.graphics.Pal;
+import mindustry.maps.Map;
+import mindustry.type.ItemStack;
 import mindustry.type.UnitType;
 import mindustry.ui.Styles;
 import mindustry.world.blocks.defense.turrets.Turret;
+import mindustry.world.meta.StatUnit;
 import mindustry.world.meta.StatValue;
 import mindustry.world.meta.StatValues;
 
+import static mindustry.Vars.iconSmall;
 import static mindustry.Vars.tilesize;
 
 /**Вспомогательный класс для отображения кастомных статов*/
@@ -119,11 +130,11 @@ public class EctoStatValues extends StatValues {
                     }
 
                     if (type.collidesAir) {
-                        sep(bt, Core.bundle.get("bullet.reachair"));
+                        sep(bt, Core.bundle.get("bullet.reachAir"));
                     }
 
                     if (type.collidesGround) {
-                        sep(bt, Core.bundle.get("bullet.reachground"));
+                        sep(bt, Core.bundle.get("bullet.reachGround"));
                     }
 
                     if (type.suppressionRange > 0) {
@@ -226,6 +237,164 @@ public class EctoStatValues extends StatValues {
 
     private static TextureRegion icon(UnlockableContent t) {
         return t.uiIcon;
+    }
+
+    public static StatValue geysers() {
+        return table -> table.table(c -> {
+            Runnable[] rebuild = {null};
+            Map[] lastMap = {null};
+
+            rebuild[0] = () -> {
+                c.clearChildren();
+                c.left();
+
+                if (!Vars.state.isGame()) {
+                    c.add("@stat.showinmap");
+                    return;
+                }
+
+                var geysers = Vars.content.blocks()
+                        .select(block -> block instanceof SteamGeyser && Vars.indexer.isBlockPresent(block))
+                        .sort(block -> ((SteamGeyser)block).activeEfficiency);
+
+                if (geysers.isEmpty()) {
+                    c.add("@none.inmap");
+                    return;
+                }
+
+                int i = 0;
+                for (var block : geysers) {
+                    SteamGeyser geyser = (SteamGeyser)block;
+
+                    c.table(Styles.grayPanel, entry -> {
+                        entry.margin(4f);
+                        entry.left();
+
+                        entry.image(block.uiIcon).size(40f).pad(5f).left();
+
+                        entry.table(info -> {
+                            info.left();
+                            info.add(block.localizedName).left().row();
+                            info.add(Core.bundle.format("stat.ectotech-geyser-efficiency", percent(geyser.passiveEfficiency), percent(geyser.activeEfficiency))).color(Color.lightGray).left();
+                        }).left().pad(5f);
+
+                    }).growX().pad(5f);
+
+                    // По 2 элемента в строку
+                    if (++i % 2 == 0) {
+                        c.row();
+                    }
+                }
+            };
+
+            rebuild[0].run();
+
+            c.update(() -> {
+                Map current = Vars.state.isGame() ? Vars.state.map : null;
+
+                if (current != lastMap[0]) {
+                    rebuild[0].run();
+                    lastMap[0] = current;
+                }
+            });
+        });
+    }
+
+    private static String percent(float value) {
+        return Strings.autoFixed(value * 100f, 1) + "%";
+    }
+
+    public static StatValue aspects(Seq<BuildAspect> aspects){
+        return table -> {
+            for(BuildAspect a : aspects){
+                table.row();
+                table.table(info -> {
+                    info.left().defaults().left().pad(3f);
+                    info.add(a.localized()).color(a.color()).colspan(2).row();
+
+                    info.add("@stat.input");
+                    info.table(v -> {
+                        StatValues.number(a.start, a.unit()).display(v);
+                        v.add(" → ");
+                        StatValues.number(a.full, a.unit()).display(v);
+                    }).row();
+
+                    info.add("@stat.poweruse");
+                    info.add("-" + Strings.autoFixed(a.powerReduction * 100f, 1) + "%").row();
+
+                    if(a.maxBoost > 0f){
+                        info.add(Core.bundle.format("bar.boost", Strings.autoFixed(a.maxBoost * 100f, 1))).colspan(2).row();
+                        info.add("@stat.ectotech-booststart");
+                        info.table(v -> StatValues.number(a.boostThresholdValue(), a.unit()).display(v)).row();
+                    }
+                }).left().padBottom(6f);
+            }
+        };
+    }
+
+    public static StatValue upgradePlans(Seq<UpgradePlan> plans, float defTime, ItemStack[] defReqs, float defPower){
+        return table -> {
+            table.row();
+
+            for (UpgradePlan plan : plans) {
+                float time = plan.resolveTime(defTime);
+                ItemStack[] reqs = plan.resolveRequirements(defReqs);
+                float power = plan.resolvePower(defPower);
+
+                table.table(Styles.grayPanel, t -> {
+
+                    if(plan.input.isBanned() || plan.output.isBanned()){
+                        t.image(Icon.cancel).color(Pal.remove).size(40);
+                        return;
+                    }
+
+                    if(!plan.input.unlockedNow() || !plan.output.unlockedNow()){
+                        t.image(Icon.lock).color(Pal.darkerGray).size(40);
+                        return;
+                    }
+
+                    t.image(plan.input.uiIcon).size(40).pad(10f).left().scaling(Scaling.fit)
+                            .with(i -> StatValues.withTooltip(i, plan.input));
+
+                    t.image(Icon.right).color(Pal.darkishGray).size(24f).pad(6f);
+
+                    t.image(plan.output.uiIcon).size(40).pad(10f).left().scaling(Scaling.fit)
+                            .with(i -> StatValues.withTooltip(i, plan.output));
+
+                    t.table(info -> {
+                        info.left().defaults().left();
+
+                        info.add(plan.output.localizedName);
+                        info.row();
+                        info.add(Strings.autoFixed(time / 60f, 1) + " " + Core.bundle.get("unit.seconds"))
+                                .color(Color.lightGray);
+
+                        if (power > 0f) {
+                            info.row();
+                            info.table(p -> {
+                                p.left();
+                                p.image(Icon.power).size(iconSmall).color(Pal.powerBar).padRight(3f);
+                                p.add(Strings.autoFixed(power * 60f, 1) + " " + StatUnit.powerSecond.localized())
+                                        .color(Color.lightGray);
+                            });
+                        }
+                    }).left().pad(6f);
+
+                    t.table(req -> {
+                        req.right();
+                        for(int i = 0; i < reqs.length; i++){
+                            if(i % 6 == 0) req.row();
+
+                            ItemStack stack = reqs[i];
+                            req.add(StatValues.displayItem(stack.item, stack.amount, time, true)).pad(5);
+                        }
+                    }).right().grow().pad(10f);
+
+                }).growX().pad(5);
+
+                table.row();
+            }
+        };
     }
 }
 
