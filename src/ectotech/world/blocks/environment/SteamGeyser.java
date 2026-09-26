@@ -44,8 +44,8 @@ public class SteamGeyser extends SteamVent {
     private static final float activeEffectSpacing = 1.5f;
     private static final float passiveEffectSpacing = 25f;
 
-    private static final float passiveVolume = 0.03f;
-    private static final float activeVolume = 0.04f;
+    private static final float passiveVolume = 0.015f;
+    private static final float activeVolume = 0.03f;
 
     private static final IntSet damagedUnits = new IntSet();
     private static final Seq<Tile> centers = new Seq<>();
@@ -214,7 +214,7 @@ public class SteamGeyser extends SteamVent {
             // Одноразовый звук перехода passive -> active
             float pt = geyser.phaseTime(center);
             if (pt < Time.delta && active) {
-                float eruptVol = hasBuilding ? 0.003f : 0.04f;
+                float eruptVol = hasBuilding ? 0.0023f : 0.032f;
                 EctoSounds.geyserEruption.at(center.worldx(), center.worldy(), 1f, eruptVol);
             }
         }
